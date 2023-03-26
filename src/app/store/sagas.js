@@ -86,20 +86,18 @@ export function* userAccountCreationSaga(){
             yield put(mutations.processAuthenticateUser(mutations.AUTHENTICATED));
 
             history.push('/dashboard');
-
         } catch (e) {
-            console.error("Error",e);
             yield put(mutations.processAuthenticateUser(mutations.USERNAME_RESERVED));
         }
     }
 }
 
-export function* initPageDataSaga(){
+export function* userAuthorizationSaga(){
     while (true){
-        yield take(mutations.REQUEST_INIT_PAGE_DATA);
+        yield take(mutations.REQUEST_AUTHORIZATION_USER);
 
         try {
-            const { responseCode, state } = yield service.get(url + `/init-page-data`);
+            const { responseCode, state } = yield service.get(url + `/auth`);
 
             if (!responseCode || responseCode !== 200) {
                 throw new Error()
@@ -108,49 +106,27 @@ export function* initPageDataSaga(){
             yield put(mutations.setState(state));
 
         } catch (e) {
-            //
+            history.push('/login');
         }
     }
 }
 
-export function* tokenAuthenticationSaga(){
-    yield take(mutations.VERIFY_TOKEN);
-
+export function* userLogoutSaga(){
     while (true){
+        yield take(mutations.REQUEST_LOGOUT_USER);
+
         try {
-            const accessToken = cookies.get('accessToken');
-
-            const refreshToken = cookies.get('refreshToken');
-
-            if (!accessToken || !refreshToken) {
-                return;
-            }
-
-            const { 
-                responseCode, 
-                accessToken: access, 
-                refreshToken: refresh 
-            } = yield service.post(url + `/token`, { 
-                accessToken, 
-                refreshToken
-            });
+            const { responseCode } = yield service.get(url + `/logout`);
 
             if (!responseCode || responseCode !== 200) {
                 throw new Error()
             }
 
-            // yield put(mutations.setState(data.state));
-            yield put(mutations.processAuthenticateUser(mutations.AUTHENTICATED, {
-                id: "U1",
-                token: ""
-            }));
-
-            cookies.set('accessToken', access);
-
-            cookies.set('refreshToken', refresh);
-            console.log(2);
-        } catch (e) {
             yield put(mutations.processAuthenticateUser(mutations.NOT_AUTHENTICATED));
+
+            history.push('/login');
+        } catch (e) {
+            // NOTHING
         }
     }
 }

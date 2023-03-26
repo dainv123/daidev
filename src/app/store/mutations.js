@@ -12,8 +12,9 @@ export const NOT_AUTHENTICATED = `NOT_AUTHENTICATED`;
 export const SET_STATE = `SET_STATE`;
 export const USERNAME_RESERVED = `USERNAME_RESERVED`;
 export const REQUEST_USER_ACCOUNT_CREATION = `REQUEST_USER_ACCOUNT_CREATION`;
-export const REQUEST_INIT_PAGE_DATA = `REQUEST_INIT_PAGE_DATA`;
+export const REQUEST_AUTHORIZATION_USER = `REQUEST_AUTHORIZATION_USER`;
 export const VERIFY_TOKEN = `VERIFY_TOKEN`;
+export const REQUEST_LOGOUT_USER = `REQUEST_LOGOUT_USER`;
 
 export const setTaskCompletion = (id, isComplete = true)=>({
     type:SET_TASK_COMPLETE,
@@ -77,12 +78,14 @@ export const requestCreateUserAccount = (username,password)=>({
     password
 });
 
-export const test = () => ({
-    type: REQUEST_INIT_PAGE_DATA
+export const auth = () => ({
+    type: REQUEST_AUTHORIZATION_USER
 })
 
-export const verifyToken = (accessToken, refreshToken) => ({
-    type: VERIFY_TOKEN,
-    // accessToken,
-    // refreshToken
+export const test = () => ({
+    type: REQUEST_AUTHORIZATION_USER
+})
+
+export const logout = () => ({
+    type: REQUEST_LOGOUT_USER
 })

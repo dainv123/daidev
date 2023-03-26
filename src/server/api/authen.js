@@ -39,9 +39,9 @@ async function assembleUser(user) {
 
 export const AuthenRoute = ({ app,  accessTokenSecret, refreshTokenSecret }) => {
   /**
-   * GET ALL INIT DATA: /init-page-data
+   * auth
    */
-  app.get('/init-page-data', AuthenticateJWT, async (req, res) => {
+  app.get('/auth', AuthenticateJWT, async (req, res) => {
     const user = req.user;
     const token = uuid()
     const state = await assembleUser(user)
@@ -110,37 +110,36 @@ export const AuthenRoute = ({ app,  accessTokenSecret, refreshTokenSecret }) => 
    * LOGOUT: /logout?refreshToken=xxxyyyzzz
    */
   app.get('/logout', (req, res) => {
-    refreshTokens = refreshTokens.filter(token => token !== req.query.refreshToken);
-    res.send("Logout successful");
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+      refreshTokens = refreshTokens.filter(token => token !== authHeader.split(' ')[1]);
+      res.send("Logout successful");
+    }
+
+    return res.json({ 
+      responseCode: 500
+    })
   })
 
 
   /**
-   * GET NEW TOKEN: /token?refreshToken=xxxyyyzzz
+   * VERIFY TOKEN
    */
-  app.get('/token', (req, res) => {
-    const token = req.query.refreshToken;
+  // app.get('/auth', AuthenticateJWT, async (req, res) => {
+  //   const user = req.user;
+  //   const token = uuid()
+  //   const state = await assembleUser(user)
 
-    if (!token) {
-      return res.sendStatus(401);
-    }
+  //   authTokens.push({
+  //     token,
+  //     userID: user.id
+  //   })
 
-    if (!refreshTokens.includes(token)) {
-      return res.sendStatus(403);
-    }
-
-    jwt.verify(token, refreshTokenSecret, (err, user) => {
-      if (err) {
-        return res.sendStatus(403);
-      }
-
-      const userJWT = { username: user.username, role: user.role }
-
-      const accessToken = jwt.sign(userJWT, accessTokenSecret, { expiresIn: API_CONFIG.TOKEN_TIME_EXPIRES });
-
-      res.json({
-        accessToken
-      });
-    });
-  })
+  //   res.json({
+  //     responseCode: 200,
+  //     token,
+  //     state
+  //   })
+  // })
 }

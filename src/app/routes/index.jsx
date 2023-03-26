@@ -13,18 +13,17 @@ import { store } from '../store';
 import { history } from '../store/history';
 import { Redirect } from 'react-router';
 import cookies from 'js-cookie'
-import * as mutations from '../store/mutations';
+// import * as mutations from '../store/mutations';
 
-const mapStateToProps = ({groups})=>({groups});
+// const mapStateToProps = ({groups})=>({groups});
 
-const mapDispatchToProps = dispatch => ({
-    test() {
-        dispatch(mutations.test())
-    }
-})
+// const mapDispatchToProps = dispatch => ({
+//     test() {
+//         dispatch(mutations.test())
+//     }
+// })
 
 const RouteGuard = Component => ({match}) => {
-    // console.log("sadas", store.getState().session);
     if (store.getState().session.authenticated) {
         return <Component match={match}/>
     }
@@ -34,7 +33,8 @@ const RouteGuard = Component => ({match}) => {
     const refreshToken = cookies.get('refreshToken');
 
     if (accessToken && refreshToken) {
-        const responsive = dispatch(mutations.verifyToken(accessToken, refreshToken));    
+        return <Component match={match}/>
+        // const responsive = dispatch(mutations.verifyToken(accessToken, refreshToken));    
     }
 
 
@@ -45,7 +45,7 @@ const RouteGuard = Component => ({match}) => {
     return <Redirect to="/login"/>
 }
 
-const ConnectedRouteGuard = connect(mapStateToProps, mapDispatchToProps)(RouteGuard);
+// const ConnectedRouteGuard = connect(mapStateToProps, mapDispatchToProps)(RouteGuard);
     
 
 export const Main = ()=>(
@@ -57,7 +57,12 @@ export const Main = ()=>(
                     <Route exact path="/" component={ConnectedHome} />
                     <Route exact path="/login" component={ConnectedLogin} />
                     <Route exact path="/signup" component={ConnectedSignUp}/>
-                    <Route exact path="/admin" render={ConnectedRouteGuard(ConnectedAdmin)}/>
+                    <Route exact path="/admin" render={RouteGuard(ConnectedAdmin)}/>
+                    {/* <Route path="user" element={<User />}>
+                        <Route index element={<Profile />} />
+                        <Route path="account" element={<Account />} />
+                        <Route path="*" element={ConnectedNotFound} />
+                    </Route> */}
                     <Route path="*" component={ConnectedNotFound} />
                 </Switch>
                 
