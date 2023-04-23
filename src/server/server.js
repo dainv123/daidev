@@ -13,29 +13,29 @@ const accessTokenSecret = KEYS.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = KEYS.REFRESH_TOKEN_SECRET;
 
 app.listen(
-  port, 
-  console.log(`SERVER LISTENING ON PORT: ${port}`)
+	port,
+	console.log(`SERVER LISTENING ON PORT: ${port}`)
 )
 
 app.use(
-  cors(),
-  bodyParser.urlencoded({ extended: true }),
-  bodyParser.json()
+	cors(),
+	bodyParser.urlencoded({ extended: true }),
+	bodyParser.json()
 )
 
 AuthenRoute({
-  app, 
-  accessTokenSecret,
-  refreshTokenSecret
+	app,
+	accessTokenSecret,
+	refreshTokenSecret
 });
 
 if (process.env.NODE_ENV == `production`) {
-  app.use(express.static(path.resolve(__dirname,'../../dist')));
-  app.get('/*', (req,res)=>{
-      res.sendFile(path.resolve('index.html'));
-  });
+	app.use(express.static(path.resolve(__dirname, '../../dist')));
+	app.get('/*', (req, res) => {
+		res.sendFile(path.resolve('index.html'));
+	});
 }
 
-BookRoute({ 
-  app 
+BookRoute({
+	app
 })
