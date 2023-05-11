@@ -15,46 +15,90 @@ export const DefaultState = {
         passwordHash: md5("PROFITING"),
         friends: []
     }],
-    aboutMe: [{
+    profile: [{
         user: "U1",
-        title: "",
-        subTitle: "",
         question: "",
         answer: "",
-        link: "",
-        answer: "",
-        answer: "",
-        answer: "",
-        answer: "",
-        answer: "",
-        answer: "",
-        answer: "",
-        answer: "",
-        answer: "",
+        avatar: "",
+        name: "",
+        address: "",
+        greeting: ""
+    }],
+    setting: [{
+        user: "U1",
+        aboutMeTitle: "",
+        aboutMeSubTitle: "",
+        aboutMeLink: "",
+        servicesTitle: "",
+        servicesSubTitle: "",
+        portfolioTitle: "",
+        portfolioSubTitle: "",
+        blogTitle: "",
+        blogSubTitle: "",
+        blogGithubLink: "",
+        resumeTitle: "",
+        resumeSubtitle: "",
+        workHistoryTitle: "",
+        workHistorySubTitle: "",
+        workHistoryDownloadButtonName: "",
+        educationTitle: "",
+        educationSubTitle: "",
+        langSkillsTitle: "",
+        langSkillsSubTitle: "",
+        workSkillsTitle: "",
+        workSkillsSubTitle: "",
+        contactTitle: "",
+        contactSubtitle: "",
+        contactInfoTitle: "",
+        contactInfoSubtitle: "",
+        socialTitle: "",
+    }],
+    jobRoles: [{
+        user: "U1",
+        title: ""
+    }],
+    services: [{
+        user: "U1",
+        title: "",
+        icon: "",
+        description: ""
+    }],
+    achievements: [{
+        user: "U1",
+        title: "",
+        icon: "",
+        description: ""
     }],
     portfolio: [{
-        id: "U1",
-        name: "Dev",
-        passwordHash: md5("TUPLES"),
-        friends: [`U2`]
+        user: "U1",
+        title: "",
+        description: "",
+        link: "",
+        image: ""
     }],
-    blog: [{
-        id: "U1",
-        name: "Dev",
-        passwordHash: md5("TUPLES"),
-        friends: [`U2`]
+    workHistory: [{
+        user: "U1",
+        title: "",
+        date: "",
+        description: "",
+        image: "",
     }],
-    resume: [{
-        id: "U1",
-        name: "Dev",
-        passwordHash: md5("TUPLES"),
-        friends: [`U2`]
+    education: [{
+        user: "U1",
+        title: "",
+        date: "",
+        description: "",
+        image: "",
     }],
-    contact: [{
+    langSkills: [{
+        user: "U1",
+        title: "",
+        point: 0,
+    }],
+    workSkills: [{
         id: "U1",
-        name: "Dev",
-        passwordHash: md5("TUPLES"),
-        friends: [`U2`]
+        title: "",
+        percent: 0
     }],
     // groups:[{
     //     name:"To Do",

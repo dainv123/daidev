@@ -19,7 +19,7 @@ function Resume() {
                 </div>
             </div>
 
-            <div class="col-sm-4">
+            <div class="col-sm-6 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <h3>Work History</h3>
@@ -56,7 +56,7 @@ function Resume() {
                 </div>
             </div>
 
-            <div class="col-sm-4">
+            <div class="col-sm-6 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <h3>Education</h3>
@@ -85,7 +85,13 @@ function Resume() {
                             <label for="history-image">Image</label>
                             <input type="file" class="form-control-file" id="history-image" />
                         </div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-sm-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
                         <h3>Work Skills</h3>
                         <div class="form-group">
                             <label for="professional-title">Title</label>
@@ -114,7 +120,7 @@ function Resume() {
                 </div>
             </div>
 
-            <div class="col-sm-4">
+            <div class="col-sm-6 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <h3>Language Skills</h3>
