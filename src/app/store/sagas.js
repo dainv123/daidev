@@ -99,6 +99,14 @@ export function* userAuthorizationSaga(){
         try {
             const { responseCode, state } = yield service.get(url + `/auth`);
 
+            const abc = yield service.post(url + `/achievements/create`, {
+                title: "1",
+                icon: "2",
+                description: "3"
+            });
+
+            console.log(abc)
+
             if (!responseCode || responseCode !== 200) {
                 throw new Error()
             }

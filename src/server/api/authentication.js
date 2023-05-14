@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 import uuid from 'uuid'
 import { API_CONFIG } from '../constants'
 import { ConnectDB } from '../helper/connect-db'
-import { AuthenticateJWT } from '../helper/authenticate-jwt'
 
 const authTokens = []
 const refreshTokens = []
@@ -37,11 +36,11 @@ async function assembleUser(user) {
 	}
 }
 
-export const AuthenRoute = ({ app, accessTokenSecret, refreshTokenSecret }) => {
+export const AuthRoute = ({ app, authJWT, accessTokenSecret, refreshTokenSecret }) => {
 	/**
 	 * auth
 	 */
-	app.get('/auth', AuthenticateJWT, async (req, res) => {
+	app.get('/auth', authJWT, async (req, res) => {
 		const user = req.user;
 		const token = uuid()
 		const state = await assembleUser(user)

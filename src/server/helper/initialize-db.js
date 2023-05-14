@@ -10,7 +10,7 @@ async function InitializeDB() {
 		await collection.insertMany(DefaultState[collectionName])
 	}
 
-	// console.log("INITIALIZE HAVE DONE");
+	console.log("INITIALIZE HAVE DONE");
 }
 
 InitializeDB();

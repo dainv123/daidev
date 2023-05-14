@@ -1,9 +1,6 @@
 import md5 from 'md5';
 
 export const DefaultState = {
-    // session: {
-    //     authenticated: false
-    // },
     users: [{
         id: "U1",
         name: "Dev",
@@ -17,95 +14,95 @@ export const DefaultState = {
     }],
     profile: [{
         user: "U1",
-        question: "",
-        answer: "",
-        avatar: "",
-        name: "",
-        address: "",
-        greeting: "",
-        email: "",
-        phone: "",
+        question: "question",
+        answer: "answer",
+        avatar: "avatar",
+        name: "name",
+        address: "address",
+        greeting: "greeting",
+        email: "email",
+        phone: "phone",
     }],
     setting: [{
         user: "U1",
-        aboutMeTitle: "",
-        aboutMeSubTitle: "",
-        aboutMeLink: "",
-        servicesTitle: "",
-        servicesSubTitle: "",
-        portfolioTitle: "",
-        portfolioSubTitle: "",
-        blogTitle: "",
-        blogSubTitle: "",
-        blogGithubLink: "",
-        resumeTitle: "",
-        resumeSubtitle: "",
-        workHistoryTitle: "",
-        workHistorySubTitle: "",
-        workHistoryDownloadButtonName: "",
-        educationTitle: "",
-        educationSubTitle: "",
-        langSkillsTitle: "",
-        langSkillsSubTitle: "",
-        workSkillsTitle: "",
-        workSkillsSubTitle: "",
-        contactTitle: "",
-        contactSubtitle: "",
-        contactInfoTitle: "",
-        contactInfoSubtitle: "",
-        socialTitle: "",
+        aboutMeTitle: "aboutMeTitle",
+        aboutMeSubTitle: "aboutMeSubTitle",
+        aboutMeLink: "aboutMeLink",
+        servicesTitle: "servicesTitle",
+        servicesSubTitle: "servicesSubTitle",
+        portfolioTitle: "portfolioTitle",
+        portfolioSubTitle: "portfolioSubTitle",
+        blogTitle: "blogTitle",
+        blogSubTitle: "blogSubTitle",
+        blogGithubLink: "blogGithubLink",
+        resumeTitle: "resumeTitle",
+        resumeSubtitle: "resumeSubtitle",
+        workHistoryTitle: "workHistoryTitle",
+        workHistorySubTitle: "workHistorySubTitle",
+        workHistoryDownloadButtonName: "workHistoryDownloadButtonName",
+        educationTitle: "educationTitle",
+        educationSubTitle: "educationSubTitle",
+        langSkillsTitle: "langSkillsTitle",
+        langSkillsSubTitle: "langSkillsSubTitle",
+        workSkillsTitle: "workSkillsTitle",
+        workSkillsSubTitle: "workSkillsSubTitle",
+        contactTitle: "contactTitle",
+        contactSubtitle: "contactSubtitle",
+        contactInfoTitle: "contactInfoTitle",
+        contactInfoSubtitle: "contactInfoSubtitle",
+        socialTitle: "socialTitle",
     }],
     jobRoles: [{
         user: "U1",
-        title: ""
+        title: "title"
     }],
     services: [{
         user: "U1",
-        title: "",
-        icon: "",
-        description: ""
+        title: "title",
+        icon: "icon",
+        description: "description"
     }],
     achievements: [{
         user: "U1",
-        title: "",
-        icon: "",
-        description: ""
+        title: "title",
+        icon: "icon",
+        description: "description"
     }],
     portfolio: [{
         user: "U1",
-        title: "",
-        description: "",
-        link: "",
-        image: ""
+        title: "title",
+        description: "description",
+        link: "link",
+        image: "image"
     }],
     workHistory: [{
         user: "U1",
-        title: "",
-        date: "",
-        description: "",
-        image: "",
+        title: "title",
+        date: "date",
+        description: "description",
+        image: "image",
     }],
     education: [{
         user: "U1",
-        title: "",
-        date: "",
-        description: "",
-        image: "",
+        title: "title",
+        date: "date",
+        description: "description",
+        image: "image",
     }],
     langSkills: [{
         user: "U1",
-        title: "",
+        title: "title",
         point: 0,
     }],
     workSkills: [{
         user: "U1",
-        title: "",
+        title: "title",
         percent: 0
     }],
     socials: [{
         user: "U1",
-        title: "",
-        icon: "",
-        link: ""
+        title: "title",
+        icon: "icon",
+        link: "link"
     }]
 };

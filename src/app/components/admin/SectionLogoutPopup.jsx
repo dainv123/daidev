@@ -17,7 +17,7 @@ function LogoutPopup({ logout }) {
                     <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <button onClick={logout} class="btn btn-primary" >Logout</button>
+                        <button onClick={logout} class="btn btn-primary">Logout</button>
                     </div>
                 </div>
             </div>
@@ -29,13 +29,8 @@ const mapStateToProps = ({ }) => ({});
 
 const mapDispatchToProps = dispatch => ({
     logout() {
-        // evt.preventDefault();
-        console.log(11);
         dispatch(mutations.logout())
     }
 })
 
 export const SectionLogoutPopup = connect(mapStateToProps, mapDispatchToProps)(LogoutPopup);
-
-
-// export const SectionLogoutPopup = LogoutPopup;

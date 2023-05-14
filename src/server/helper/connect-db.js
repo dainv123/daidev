@@ -8,7 +8,10 @@ export async function ConnectDB() {
 
 	const client = await MongoClient.connect(DB_CONFIG.URL, {
 		useNewUrlParser: true,
-		useUnifiedTopology: true
+		useUnifiedTopology: true,
+		// ssl: true,
+        // tlsCAFile: mongoCertPath, ----> you should remove this line
+        // socketTimeoutMS:43200000,
 	});
 
 	db = client.db()
