@@ -5,7 +5,7 @@ import { DB_CONFIG } from '../constants'
 let db = null
 
 export async function ConnectMongoose() {
-	return mongoose.createConnection('mongodb://127.0.0.1:27017/test');
+	return mongoose.createConnection(DB_CONFIG.URL);
 }
 
 export async function ConnectDB() {
@@ -13,7 +13,7 @@ export async function ConnectDB() {
 
 	const client = await MongoClient.connect(DB_CONFIG.URL, {
 		useNewUrlParser: true,
-		useUnifiedTopology: true,
+		useUnifiedTopology: true
 	});
 
 	db = client.db()
@@ -21,4 +21,4 @@ export async function ConnectDB() {
 	return db
 }
 
-ConnectDB();
+// ConnectDB();

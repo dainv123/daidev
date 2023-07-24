@@ -5,7 +5,7 @@ export const KEYS = {
 
 export const DB_CONFIG = {
 	PORT: '2040',
-	URL: 'mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false'
+	URL: 'mongodb://127.0.0.1:27017/daidev',
 };
 
 export const API_CONFIG = {
@@ -13,6 +13,5 @@ export const API_CONFIG = {
 }
 
 export const MESSAGES = {
-	//
 }
 

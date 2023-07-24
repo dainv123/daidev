@@ -11,8 +11,8 @@
     "server-dev": "nodemon src/server --exec babel-node src/server",
     "start-dev": "concurrently \"npm run server-dev\" \"npm run dev\"",
     "server-spec": "babel-node src/server/server.spec",
-    "connectdb-test": "babel-node src/server/helper/connect-db.js",
-    "initdb-test": "babel-node src/server/helper/initialize-db.js",
+    "connect-db": "babel-node src/server/helper/connect-db.js",
+    "init-db": "babel-node src/server/helper/initialize-db.js",
     "start": "npm run server"
   },
   "keywords": [

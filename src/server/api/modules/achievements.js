@@ -1,6 +1,8 @@
-import { AchievementModel } from '../models/achievements';
+// import { AchievementModel } from '../models/achievements';
 
 const express = require('express');
+
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
@@ -15,12 +17,28 @@ router.post('/create', async (req, res) => {
         description
     } = req.body;
 
-    const response = await AchievementModel.create({ 
+    const schema = new mongoose.Schema({
+        user: String,
+        title: String,
+        icon: String,
+        description: String
+    });
+
+    const User = mongoose.model("User", schema);
+
+    const response = new User({
         user: req.user.id,
         icon,
         title,
         description
     });
+
+    // const response = await AchievementModel.create({ 
+    //     user: req.user.id,
+    //     icon,
+    //     title,
+    //     description
+    // });
 
     console.log("a", response)
 });
