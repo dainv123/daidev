@@ -5,6 +5,7 @@ import { API_CONFIG } from '../constants'
 import { ConnectDB } from '../helper/connect-db'
 
 const authTokens = []
+
 const refreshTokens = []
 
 async function assembleUser(user) {
@@ -37,9 +38,6 @@ async function assembleUser(user) {
 }
 
 export const AuthRoute = ({ app, authJWT, accessTokenSecret, refreshTokenSecret }) => {
-	/**
-	 * auth
-	 */
 	app.get('/auth', authJWT, async (req, res) => {
 		const user = req.user;
 		const token = uuid()
@@ -58,9 +56,6 @@ export const AuthRoute = ({ app, authJWT, accessTokenSecret, refreshTokenSecret 
 	})
 
 
-	/**
-	 * LOGIN: /login?username=test&password=****
-	 */
 	app.post('/login', async (req, res) => {
 		try {
 			const { username, password } = req.body
@@ -104,10 +99,6 @@ export const AuthRoute = ({ app, authJWT, accessTokenSecret, refreshTokenSecret 
 		}
 	})
 
-
-	/**
-	 * LOGOUT: /logout?refreshToken=xxxyyyzzz
-	 */
 	app.get('/logout', (req, res) => {
 		const authHeader = req.headers.authorization;
 
@@ -121,10 +112,6 @@ export const AuthRoute = ({ app, authJWT, accessTokenSecret, refreshTokenSecret 
 		})
 	})
 
-
-	/**
-	 * VERIFY TOKEN
-	 */
 	// app.get('/auth', AuthenticateJWT, async (req, res) => {
 	//   const user = req.user;
 	//   const token = uuid()

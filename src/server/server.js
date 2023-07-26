@@ -14,7 +14,7 @@ import { ProfileRoute } from './api/modules/profile';
 import { ServicesRoute } from './api/modules/services';
 import { SettingRoute } from './api/modules/setting';
 import { SocialsRoute } from './api/modules/socials';
-import { workHistoryRoute } from './api/modules/work-history';
+import { WorkHistoryRoute } from './api/modules/work-history';
 import { WorkSkillsRoute } from './api/modules/work-skills';
 
 const app = express()
@@ -85,7 +85,7 @@ SocialsRoute({
 	authJWT
 });
 
-workHistoryRoute({
+WorkHistoryRoute({
 	app,
 	authJWT
 });
