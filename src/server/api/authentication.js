@@ -2,14 +2,14 @@ import md5 from 'md5'
 import jwt from 'jsonwebtoken'
 import uuid from 'uuid'
 import { API_CONFIG } from '../constants'
-import { ConnectDB } from '../helper/connect-db'
+import { connectManualDB } from '../helper/connect-db'
 
 const authTokens = []
 
 const refreshTokens = []
 
 async function assembleUser(user) {
-	const db = await ConnectDB()
+	const db = await connectManualDB()
 
 	const tasks = await db.collection('tasks').find({
 		owner: user.id
@@ -60,9 +60,9 @@ export const AuthRoute = ({ app, authJWT, accessTokenSecret, refreshTokenSecret 
 		try {
 			const { username, password } = req.body
 
-			const db = await ConnectDB()
+			const db = await connectManualDB()
 
-			const collection = db.collection('users')
+			const collection = db.collection('user')
 
 			const user = await collection.findOne({ name: username })
 

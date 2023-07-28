@@ -1,5 +1,5 @@
 import { MESSAGES } from '../../constants';
-import { WorkHistoryModel } from '../models/work-history';
+import { WorkSkillModel } from '../models/work-skill';
 
 const express = require('express');
 
@@ -14,7 +14,7 @@ router.post('/create', async (req, res) => {
 	} = req.body;
 
     try {
-        const workHistory = new WorkHistoryModel({
+        const workSkill = new WorkSkillModel({
             user: req.user.id,
             title,
 			date,
@@ -22,11 +22,11 @@ router.post('/create', async (req, res) => {
 			image,
         });
 
-        const saved = await workHistory.save();
+        const saved = await workSkill.save();
 
         res.status(200).json(saved);
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_CREATE_WORK_HISTORY });
+        res.status(500).json({ error: MESSAGES.FAILED_CREATE_WORK_SKILL });
     }
 });
 
@@ -40,32 +40,32 @@ router.post('/update', async (req, res) => {
     } = req.body;
 
     try {
-        const workHistory = await WorkHistoryModel.findById(id);
+        const workSkill = await WorkSkillModel.findById(id);
 
         if (title !== undefined) {
-            workHistory.title = title;
+            workSkill.title = title;
         }
 
 		if (date !== undefined) {
-            workHistory.date = date;
+            workSkill.date = date;
         }
 
 		if (description !== undefined) {
-            workHistory.description = description;
+            workSkill.description = description;
         }
 
 		if (image !== undefined) {
-            workHistory.image = image;
+            workSkill.image = image;
         }
 
-        const saved = await workHistory.save();
+        const saved = await workSkill.save();
 
         res.status(200).json(saved);
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_WORK_HISTORY });
+        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_WORK_SKILL });
     }
 });
 
-export const WorkHistoryRoute = ({ app, authJWT }) => {
-    app.use('/work-history', authJWT, router);
+export const WorkSkillRoute = ({ app, authJWT }) => {
+    app.use('/work-skill', authJWT, router);
 }

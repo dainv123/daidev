@@ -4,11 +4,21 @@ import { DB_CONFIG } from '../constants'
 
 let db = null
 
-export async function ConnectMongoose() {
-	return mongoose.createConnection(DB_CONFIG.URL);
-}
+export async function connectMongooseDB() {
+	try {
+		await mongoose.connect(DB_CONFIG.URL, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+		});
+		console.log('Connected to MongoDB');
+	} catch (error) {
+		console.error('Error connecting to MongoDB:', error.message);
+		process.exit(1);
+	}
+};
 
-export async function ConnectDB() {
+
+export async function connectManualDB() {
 	if (db) return db;
 
 	const client = await MongoClient.connect(DB_CONFIG.URL, {
@@ -18,7 +28,11 @@ export async function ConnectDB() {
 
 	db = client.db()
 
+	console.log('CONNECT SUCCESSFULLY');
+
 	return db
 }
 
-// ConnectDB();
+connectMongooseDB();
+
+// connectManualDB();

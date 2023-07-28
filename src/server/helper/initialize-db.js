@@ -1,8 +1,8 @@
-import { ConnectDB } from './connect-db'
+import { connectManualDB } from './connect-db'
 import { DefaultState } from './default-state'
 
-async function InitializeDB() {
-	let db = await ConnectDB();
+async function initializeDB() {
+	let db = await connectManualDB();
 
 	for (let collectionName in DefaultState) {
 		let collection = db.collection(collectionName)
@@ -13,4 +13,4 @@ async function InitializeDB() {
 	console.log("INITIALIZE HAVE DONE");
 }
 
-InitializeDB();
+initializeDB();

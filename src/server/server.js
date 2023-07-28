@@ -5,17 +5,17 @@ import bodyParser from 'body-parser'
 import { AuthRoute } from './api/authentication'
 import { DB_CONFIG, KEYS } from './constants'
 import { AuthenticateJWT as authJWT } from './helper/authenticate-jwt'
-import { AchievementsRoute } from './api/modules/achievements';
+import { AchievementRoute } from './api/modules/achievement';
 import { EducationRoute } from './api/modules/education';
-import { JobRolesRoute } from './api/modules/job-roles';
-import { LangSkillsRoute } from './api/modules/lang-skills';
+import { JobRoleRoute } from './api/modules/job-role';
+import { LangSkillRoute } from './api/modules/lang-skill';
 import { PortfolioRoute } from './api/modules/portfolio';
 import { ProfileRoute } from './api/modules/profile';
-import { ServicesRoute } from './api/modules/services';
+import { ServiceRoute } from './api/modules/service';
 import { SettingRoute } from './api/modules/setting';
-import { SocialsRoute } from './api/modules/socials';
+import { SocialRoute } from './api/modules/social';
 import { WorkHistoryRoute } from './api/modules/work-history';
-import { WorkSkillsRoute } from './api/modules/work-skills';
+import { WorkSkillRoute } from './api/modules/work-skill';
 
 const app = express()
 const port = process.env.PORT || DB_CONFIG.PORT;
@@ -40,7 +40,7 @@ AuthRoute({
 	refreshTokenSecret
 });
 
-AchievementsRoute({
+AchievementRoute({
 	app,
 	authJWT
 });
@@ -50,12 +50,12 @@ EducationRoute({
 	authJWT
 });
 
-JobRolesRoute({
+JobRoleRoute({
 	app,
 	authJWT
 });
 
-LangSkillsRoute({
+LangSkillRoute({
 	app,
 	authJWT
 });
@@ -70,7 +70,7 @@ ProfileRoute({
 	authJWT
 });
 
-ServicesRoute({
+ServiceRoute({
 	app,
 	authJWT
 });
@@ -80,7 +80,7 @@ SettingRoute({
 	authJWT
 });
 
-SocialsRoute({
+SocialRoute({
 	app,
 	authJWT
 });
@@ -90,7 +90,7 @@ WorkHistoryRoute({
 	authJWT
 });
 
-WorkSkillsRoute({
+WorkSkillRoute({
 	app,
 	authJWT
 });

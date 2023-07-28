@@ -99,10 +99,9 @@ export function* userAuthorizationSaga(){
         try {
             const { responseCode, state } = yield service.get(url + `/auth`);
 
-            const abc = yield service.post(url + `/achievements/create`, {
-                title: "1",
-                icon: "2",
-                description: "3"
+            const abc = yield service.post(url + `/achievement/create`, {
+                
+                description: "3 edit"
             });
 
             console.log(abc)
@@ -114,7 +113,8 @@ export function* userAuthorizationSaga(){
             yield put(mutations.setState(state));
 
         } catch (e) {
-            history.push('/login');
+            console.log(e);
+           // history.push('/login');
         }
     }
 }

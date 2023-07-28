@@ -13,5 +13,9 @@ export const API_CONFIG = {
 }
 
 export const MESSAGES = {
+	FAILED_CREATE_ACHIEVEMENT: "Failed to create achievement",
+	FAILED_UPDATE_ACHIEVEMENT: "Failed to update achievement",
+	FAILED_CREATE_EDUCATION: "Failed to create education",
+	FAILED_CREATE_EDUCATION: "Failed to create education",
 }
 

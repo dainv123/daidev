@@ -1,7 +1,7 @@
 import md5 from 'md5';
 
 export const DefaultState = {
-    users: [{
+    user: [{
         id: "U1",
         name: "Dev",
         passwordHash: md5("TUPLES"),
@@ -52,17 +52,17 @@ export const DefaultState = {
         contactInfoSubtitle: "contactInfoSubtitle",
         socialTitle: "socialTitle",
     }],
-    jobRoles: [{
+    jobRole: [{
         user: "U1",
         title: "title"
     }],
-    services: [{
+    service: [{
         user: "U1",
         title: "title",
         icon: "icon",
         description: "description"
     }],
-    achievements: [{
+    achievement: [{
         user: "U1",
         title: "title",
         icon: "icon",
@@ -89,17 +89,17 @@ export const DefaultState = {
         description: "description",
         image: "image",
     }],
-    langSkills: [{
+    langSkill: [{
         user: "U1",
         title: "title",
         point: 0,
     }],
-    workSkills: [{
+    workSkill: [{
         user: "U1",
         title: "title",
         percent: 0
     }],
-    socials: [{
+    social: [{
         user: "U1",
         title: "title",
         icon: "icon",
