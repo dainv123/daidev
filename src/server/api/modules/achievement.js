@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const achievements = await AchievementModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(achievements);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_ACHIEVEMENT });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const {
         title,
@@ -64,6 +76,7 @@ router.post('/update', async (req, res) => {
 
         res.status(200).json(saved);
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: MESSAGES.FAILED_UPDATE_ACHIEVEMENT });
     }
 });

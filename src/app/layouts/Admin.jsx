@@ -3,7 +3,6 @@ import useStyle from '../hooks/useStyle'
 import useScript from '../hooks/useScript'
 import { SectionTopbar } from '../components/admin/SectionTopbar'
 import { SectionSidebar } from '../components/admin/SectionSidebar'
-import { SectionSnackbar } from '../components/admin/SectionSnackbar'
 import { SectionLogoutPopup } from '../components/admin/SectionLogoutPopup'
 import { connect } from 'react-redux'
 import * as mutations from '../store/mutations'
@@ -23,7 +22,6 @@ function Layout(props) {
         <div id="admin-page">
             <div id="wrapper">
                 <SectionSidebar />
-                <SectionSnackbar />
                 <div id="content-wrapper" class="d-flex flex-column">
                     <div id="content">
                         <SectionTopbar user="user" />
@@ -45,5 +43,3 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export const LayoutAdmin = connect(mapStateToProps, mapDispatchToProps)(Layout);
-
-// export const LayoutAdmin = Layout;

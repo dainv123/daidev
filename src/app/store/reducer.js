@@ -2,76 +2,192 @@ import { combineReducers } from 'redux';
 import * as mutations from './mutations'
 
 let defaultState = {
-    session:{},
-    comments:[],
-    users:[],
-    groups:[],
-    tasks:[]
+    session: {},
+    users: [],
+    achievement: {},
+    education: {},
+    jobRole: {},
+    langSkill: {},
+    portfolio: {},
+    profile: {},
+    service: {},
+    setting: {},
+    social: {},
+    workHistory: {},
+    workSkill: {},
 };
 
 export const reducer = combineReducers({
-    session(userSession = defaultState.session,action){
-        let {type,authenticated, session} = action;
-        switch(type){
+    session(userSession = defaultState.session, action) {
+        let {
+            type,
+            authenticated,
+            session
+        } = action;
+        switch (type) {
             case mutations.SET_STATE:
-                return {...userSession, id: action.state.session.id};
+                return {
+                    ...userSession, id: action.state.session.id
+                };
             case mutations.REQUEST_AUTHENTICATE_USER:
-                return {...userSession, authenticated:mutations.AUTHENTICATING};
+                return {
+                    ...userSession, authenticated: mutations.AUTHENTICATING
+                };
             case mutations.PROCESSING_AUTHENTICATE_USER:
-                return {...userSession, authenticated};
+                return {
+                    ...userSession, authenticated
+                };
             default:
                 return userSession;
         }
     },
-    comments:(comments = defaultState.comments,action)=>{
-        switch (action.type) {
-            case mutations.ADD_TASK_COMMENT:
-                let {type,owner,task,content,id} = action;
-                return [...comments,{owner,task,content,id}];
-            case mutations.SET_STATE:
-                return action.state.comments;
-        }
-        return comments;
-    },
-    users:(users = defaultState.users,action)=>{
+    users: (users = defaultState.users, action) => {
         switch (action.type) {
             case mutations.SET_STATE:
                 return action.state.users;
         }
         return users;
     },
-    groups:(groups = defaultState.groups,action)=>{
+    achievement:(achievement = defaultState.achievement,action)=>{
         switch (action.type) {
-            case mutations.SET_STATE:
-                return action.state.groups;
+            case mutations.SET_ACHIEVEMENT:
+                const { id, title, icon, description } = action
+                return { id, title, icon, description };
         }
-        return groups;
+        return achievement;
     },
-    tasks(tasks = defaultState.tasks,action){
-        switch(action.type) {
-            case mutations.SET_STATE:
-                return action.state.tasks;
-            case mutations.SET_TASK_COMPLETE:
-                return tasks.map(task=>{
-                    return (task.id === action.taskID) ? {...task,isComplete:action.isComplete} : task;
-                });
-            case mutations.SET_TASK_GROUP:
-                return tasks.map(task=>{
-                    return (task.id === action.taskID) ? {...task, group:action.groupID} : task;
-                });
-            case mutations.SET_TASK_NAME:
-                return tasks.map(task=> {
-                    return (task.id === action.taskID) ? {...task, name: action.name} : task;
-                });
-            case mutations.CREATE_TASK:
-                return [...tasks,{
-                    id:action.taskID,
-                    name:"New Task",
-                    group:action.groupID,
-                    owner:action.ownerID,
-                    isComplete:false
-                }]
+    education:(education = defaultState.education,action)=>{
+        switch (action.type) {
+            case mutations.SET_EDUCATION:
+                const { id, title, date, image, description } = action
+                return { id, title, date, image, description };
         }
-        return tasks;
-    }
+        return education;
+    },
+    jobRole:(jobRole = defaultState.jobRole,action)=>{
+        switch (action.type) {
+            case mutations.SET_JOB_ROLE:
+                const { id, title } = action
+                return { id, title };
+        }
+        return jobRole;
+    },
+    langSkill:(langSkill = defaultState.langSkill,action)=>{
+        switch (action.type) {
+            case mutations.SET_LANG_SKILL:
+                const { id, title, point } = action
+                return { id, title, point };
+        }
+        return langSkill;
+    },
+    portfolio:(portfolio = defaultState.portfolio,action)=>{
+        switch (action.type) {
+            case mutations.SET_PORTFOLIO:
+                const { id, title, link, image, description } = action
+                return { id, title, link, image, description };
+        }
+        return portfolio;
+    },
+    profile:(profile = defaultState.profile,action)=>{
+        switch (action.type) {
+            case mutations.SET_PROFILE:
+                const { id, question, answer, avatar, name, address, greeting, email, phone } = action
+                return { id, question, answer, avatar, name, address, greeting, email, phone };
+        }
+        return profile;
+    },
+    service:(service = defaultState.service,action)=>{
+        switch (action.type) {
+            case mutations.SET_SERVICE:
+                const { id, icon, title, description } = action
+                return { id, icon, title, description };
+        }
+        return service;
+    },
+    setting:(setting = defaultState.setting,action)=>{
+        switch (action.type) {
+            case mutations.SET_SETTING:
+                const { 
+                    aboutMeTitle,
+                    aboutMeSubTitle,
+                    aboutMeLink,
+                    servicesTitle,
+                    servicesSubTitle,
+                    portfolioTitle,
+                    portfolioSubTitle,
+                    blogTitle,
+                    blogSubTitle,
+                    blogGithubLink,
+                    resumeTitle,
+                    resumeSubtitle,
+                    workHistoryTitle,
+                    workHistorySubTitle,
+                    workHistoryDownloadButtonName,
+                    educationTitle,
+                    educationSubTitle,
+                    langSkillsTitle,
+                    langSkillsSubTitle,
+                    workSkillsTitle,
+                    workSkillsSubTitle,
+                    contactTitle,
+                    contactSubtitle,
+                    contactInfoTitle,
+                    contactInfoSubtitle,
+                    socialTitle,
+                } = action
+                return { 
+                    aboutMeTitle,
+                    aboutMeSubTitle,
+                    aboutMeLink,
+                    servicesTitle,
+                    servicesSubTitle,
+                    portfolioTitle,
+                    portfolioSubTitle,
+                    blogTitle,
+                    blogSubTitle,
+                    blogGithubLink,
+                    resumeTitle,
+                    resumeSubtitle,
+                    workHistoryTitle,
+                    workHistorySubTitle,
+                    workHistoryDownloadButtonName,
+                    educationTitle,
+                    educationSubTitle,
+                    langSkillsTitle,
+                    langSkillsSubTitle,
+                    workSkillsTitle,
+                    workSkillsSubTitle,
+                    contactTitle,
+                    contactSubtitle,
+                    contactInfoTitle,
+                    contactInfoSubtitle,
+                    socialTitle,
+                };
+        }
+        return setting;
+    },
+    social:(social = defaultState.social,action)=>{
+        switch (action.type) {
+            case mutations.SET_SOCIAL:
+                const { id, icon, title, link } = action
+                return { id, icon, title, link };
+        }
+        return social;
+    },
+    workHistory:(workHistory = defaultState.workHistory,action)=>{
+        switch (action.type) {
+            case mutations.SET_WORK_HISTORY:
+                const { id, date, title, image, description } = action
+                return { id, date, title, image, description };
+        }
+        return workHistory;
+    },
+    workSkill:(workSkill = defaultState.workSkill,action)=>{
+        switch (action.type) {
+            case mutations.SET_WORK_SKILL:
+                const { id, title, percent } = action
+                return { id, title, percent };
+        }
+        return workSkill;
+    },
 });

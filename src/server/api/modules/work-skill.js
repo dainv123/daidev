@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const workSkills = await WorkSkillModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(workSkills);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_WORK_SKILL });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const { 
 		title,

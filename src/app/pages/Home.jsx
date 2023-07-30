@@ -34,13 +34,13 @@ function Home ({ groups, test }) {
     return (
         <div className="home">
             <SectionPreloader></SectionPreloader>
-            <div class="wrapper-page">
+            <div className="wrapper-page">
                 <SectionHeader />
 
                 <SectionResponsiveHeader />
 
-                <div class="content-pages">
-                    <div class="sub-home-pages">
+                <div className="content-pages">
+                    <div className="sub-home-pages">
                         <SectionHome />
 
                         <SectionAboutMe />

@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const educations = await EducationModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(educations);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_EDUCATION });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const {
         title,

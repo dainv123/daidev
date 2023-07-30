@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const profiles = await ProfileModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(profiles);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_PROFILE });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const {
         question,

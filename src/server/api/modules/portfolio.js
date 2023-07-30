@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const portfolios = await PortfolioModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(portfolios);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_PORTFOLIO });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const {
         title,

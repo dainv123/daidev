@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const services = await ServiceModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(services);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_SERVICE });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const {
         title,

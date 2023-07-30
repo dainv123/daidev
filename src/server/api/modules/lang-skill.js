@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const langSkills = await LangSkillModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(langSkills);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_LANG_SKILL });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const { title, point } = req.body;
 

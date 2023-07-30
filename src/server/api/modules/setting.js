@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const settings = await SettingModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(settings);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_SETTING });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const {
         aboutMeTitle,

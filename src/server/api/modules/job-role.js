@@ -5,6 +5,18 @@ const express = require('express');
 
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const jobRoles = await JobRoleModel.find({
+            user: req.user.id
+        });
+
+        res.status(200).json(jobRoles);
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_GET_JOB_ROLE });
+    }
+});
+
 router.post('/create', async (req, res) => {
     const { title } = req.body;
 
