@@ -1,6 +1,6 @@
 import React from "react";
 
-function Blog() {
+function Blog({ setting, updateValue }) {
     return (
         <div className="row ml-4 mr-4">
             <div className="card col-sm-12">
@@ -14,6 +14,8 @@ function Blog() {
                                 className="form-control"
                                 id="title"
                                 placeholder="BLOG"
+                                value={setting.blogTitle} 
+                                onChange={(event) => updateValue('setting', 'blogTitle', event.target.value)}
                             />
                         </div>
                         <div className="form-group">
@@ -23,6 +25,8 @@ function Blog() {
                                 className="form-control"
                                 id="sub-title"
                                 placeholder="I SHARE MY NEWS AND BLOG"
+                                value={setting.blogSubTitle} 
+                                onChange={(event) => updateValue('setting', 'blogSubTitle', event.target.value)}
                             />
                         </div>
                         <div className="form-group">
@@ -31,7 +35,9 @@ function Blog() {
                                 type="text"
                                 className="form-control"
                                 id="github"
-                                placeholder="https://api.github.com/users/dainv123/repos"
+                                placeholder="Link"
+                                value={setting.blogGithubLink} 
+                                onChange={(event) => updateValue('setting', 'blogGithubLink', event.target.value)}
                             />
                         </div>
                     </form>

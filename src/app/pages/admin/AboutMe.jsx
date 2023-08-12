@@ -5,7 +5,7 @@ import { SectionAboutMe } from '../../components/admin/SectionAboutMe'
 import { SectionSnackbar } from '../../components/admin/SectionSnackbar'
 import * as mutations from '../../store/mutations'
 
-function AboutMe ({
+function AboutMe({
     setting,
     getSetting,
     createSetting,
@@ -24,8 +24,9 @@ function AboutMe ({
     const [settingState, setSettingState] = useState(setting);
 
     const [achievementState, setAchievementState] = useState(achievement);
-    
+
     useEffect(() => {
+        getSetting();
         getService();
         getAchievement();
     }, []);
@@ -62,31 +63,22 @@ function AboutMe ({
 
     const updateValue = (type, property, value) => {
         if (type === 'achievement') {
-            setAchievementState({
-                ...achievementState,
-                [property]: value,
-            });
+            setAchievementState({ ...achievementState, [property]: value });
         } else if (type === 'service') {
-            setServiceState({
-                ...serviceState,
-                [property]: value,
-            });
+            setServiceState({ ...serviceState, [property]: value });
         } else {
-            setSettingState({
-                ...settingState,
-                [property]: value,
-            });
+            setSettingState({ ...settingState, [property]: value });
         }
     };
 
     return (
         <LayoutAdmin>
-            <SectionSnackbar 
+            <SectionSnackbar
                 show={showSnackbar}
                 hide={hideSnackbar}
                 submit={submitSnackbar}
-            />
-            <SectionAboutMe 
+            ></SectionSnackbar>
+            <SectionAboutMe
                 setting={settingState}
                 service={serviceState}
                 achievement={achievementState}
@@ -96,11 +88,11 @@ function AboutMe ({
     );
 }
 
-const mapStateToProps = ({ 
+const mapStateToProps = ({
     service,
     setting,
     achievement,
-}) => ({ 
+}) => ({
     service,
     setting,
     achievement,
@@ -114,7 +106,7 @@ const mapDispatchToProps = dispatch => ({
     createSetting(payload) {
         dispatch(mutations.createSetting(payload));
     },
-    
+
     updateSetting(payload) {
         dispatch(mutations.updateSetting(payload));
     },
@@ -126,19 +118,19 @@ const mapDispatchToProps = dispatch => ({
     createService(payload) {
         dispatch(mutations.createService(payload));
     },
-    
+
     updateService(payload) {
         dispatch(mutations.updateService(payload));
     },
-    
+
     getAchievement() {
         dispatch(mutations.getAchievement());
     },
-    
+
     createAchievement(payload) {
         dispatch(mutations.createAchievement(payload));
     },
-    
+
     updateAchievement(payload) {
         dispatch(mutations.updateAchievement(payload));
     },

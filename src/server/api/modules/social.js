@@ -71,5 +71,5 @@ router.post('/update', async (req, res) => {
 });
 
 export const SocialRoute = ({ app, authJWT }) => {
-    app.use('/service', authJWT, router);
+    app.use('/social', authJWT, router);
 }

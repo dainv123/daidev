@@ -1,83 +1,113 @@
-import { MESSAGES } from '../../constants';
-import { PortfolioModel } from '../models/portfolio';
+import { MESSAGES } from '../../constants'
 
-const express = require('express');
+import { PortfolioModel } from '../models/portfolio'
 
-const router = express.Router();
+import { getImagesInformation } from './file'
+
+const express = require('express')
+
+const router = express.Router()
 
 router.get('/get', async (req, res) => {
     try {
-        const portfolios = await PortfolioModel.find({
-            user: req.user.id
-        });
+        let portfolios = await PortfolioModel.find({ user: req.user.id })
 
-        res.status(200).json(portfolios);
+        const imageIds = portfolios.reduce((acc, item) => {
+            return acc.concat(item.images || [])
+        }, [])
+
+        const imageInformation = await getImagesInformation(imageIds) || []
+
+        portfolios = (portfolios || []).map((portfolio) => {
+            const medium = JSON.parse(JSON.stringify(portfolio))
+
+            const images = JSON.parse(JSON.stringify(medium.images || [])).map(image => ({
+                ...(imageInformation.find(info => info.id == image) || {}),
+                id: image
+            }))
+
+            medium.images = images
+            
+            return medium
+        })
+
+        res.status(200).json(portfolios)
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_GET_PORTFOLIO });
+        res.status(500).json({ error: MESSAGES.FAILED_GET_PORTFOLIO })
     }
-});
+})
 
 router.post('/create', async (req, res) => {
-    const {
-        title,
-        link,
-        image,
-        description
-    } = req.body;
-
+    const portfolios = req.body
+    
     try {
-        const portfolio = new PortfolioModel({
-            user: req.user.id,
-            title,
-            link,
-            image,
-            description
-        });
+        for (const portfolio of portfolios) {
+            const { title, link, description, images } = portfolio
+            
+            const newPortfolio = new PortfolioModel({
+                user: req.user.id,
+                title,
+                link,
+                images,
+                description
+            })
+    
+            await newPortfolio.save()
+        }
 
-        const saved = await portfolio.save();
-
-        res.status(200).json(saved);
+        res.status(200).json()
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_CREATE_PORTFOLIO });
+        res.status(500).json({ error: MESSAGES.FAILED_CREATE_PORTFOLIO })
     }
-});
+})
+
 
 router.post('/update', async (req, res) => {
-    const {
-        id,
-        title,
-        link,
-        image,
-        description
-    } = req.body;
-
+    const portfolios = req.body
+    
     try {
-        const portfolio = await PortfolioModel.findById(id);
+        for (const portfolio of portfolios) {
+            const { id, title, link, description, images } = portfolio
+            
+            const updatedPortfolio = await PortfolioModel.findByIdAndUpdate(
+                id,
+                {
+                    user: req.user.id,
+                    title,
+                    link,
+                    images,
+                    description
+                },
+                {
+                    new: true
+                }
+            )
 
-        if (link !== undefined) {
-            portfolio.link = link;
+            await updatedPortfolio.save()
         }
 
-        if (title !== undefined) {
-            portfolio.title = title;
-        }
-
-        if (image !== undefined) {
-            portfolio.image = image;
-        }
-
-        if (description !== undefined) {
-            portfolio.description = description;
-        }
-
-        const saved = await portfolio.save();
-
-        res.status(200).json(saved);
+        res.status(200).json()
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_PORTFOLIO });
+        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_PORTFOLIO })
     }
-});
+})
 
+router.post('/delete', async (req, res) => {
+    const ids = req.body.ids || []
+
+    
+    try {
+        await PortfolioModel
+            .find({ _id: { $in: ids.map(id => new ObjectId(id)) }})
+            .remove()
+            .exec()
+
+        res.status(200).json()
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_PORTFOLIO })
+    }
+})
+    
 export const PortfolioRoute = ({ app, authJWT }) => {
-    app.use('/portfolio', authJWT, router);
+    app.use('/portfolio', authJWT, router)
 }

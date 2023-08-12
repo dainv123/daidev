@@ -8,22 +8,22 @@ import * as mutations from './mutations'
 
 const url = process.env.NODE_ENV === 'production' ? `` : `http://localhost:2040`;
 
-export function* taskCreationSaga(){
-    while (true){
-        const {groupID} = yield take(mutations.REQUEST_TASK_CREATION);
-        const ownerID = yield select(state=>state.session.id);
-        const taskID = uuid();
-        let mutation = mutations.createTask(taskID, groupID, ownerID);
-        const { res } = yield axios.post(url + `/task/new`,{task:{
-            id:taskID,
-            group: groupID,
-            owner: ownerID,
-            isComplete:false,
-            name:"New task"
-        }});
-        yield put(mutation);
-    }
-}
+// export function* taskCreationSaga(){
+//     while (true){
+//         const {groupID} = yield take(mutations.REQUEST_TASK_CREATION);
+//         const ownerID = yield select(state=>state.session.id);
+//         const taskID = uuid();
+//         let mutation = mutations.createTask(taskID, groupID, ownerID);
+//         const { res } = yield axios.post(url + `/task/new`,{task:{
+//             id:taskID,
+//             group: groupID,
+//             owner: ownerID,
+//             isComplete:false,
+//             name:"New task"
+//         }});
+//         yield put(mutation);
+//     }
+// }
 
 export function* commentCreationSaga(){
     while (true) {
@@ -385,14 +385,12 @@ export function* langSkillUpdatingSaga() {
 // portfolio
 export function* portfolioGettingSaga(){
     while (true){
-        yield take(mutations.GET_LANG_SKILL);
+        yield take(mutations.GET_PORTFOLIO);
 
         try {
             const response = yield service.get(url + `/portfolio/get`);
 
-            const {_id: id, title, link, image, description} = response.length ? response[0] : {};
-
-            const mutation = mutations.setPortfolio(id, title, link, image, description);
+            const mutation = mutations.setPortfolio(response || []);
 
             yield put(mutation);
         } catch (e) {
@@ -404,18 +402,16 @@ export function* portfolioGettingSaga(){
 export function* portfolioCreationSaga() {
     while (true){
         try {
-            const { title, link, image, description } = yield take (mutations.CREATE_LANG_SKILL);
+            const { title, link, image, description } = yield take (mutations.CREATE_PORTFOLIO);
 
-            const response = yield service.post(url + `/portfolio/create`, {
+             yield service.post(url + `/portfolio/create`, {
                 title, 
                 link, 
                 image, 
                 description
             });
 
-            const {_id: id} = response.length ? response[0] : {};
-
-            const mutation = mutations.setPortfolio(id, title, link, image, description);
+            const mutation = mutations.getPortfolio();
 
             yield put(mutation);
         } catch (e) {
@@ -427,7 +423,7 @@ export function* portfolioCreationSaga() {
 export function* portfolioUpdatingSaga() {
     while (true){
         try {
-            const { id, title, link, image, description } = yield take (mutations.UPDATE_LANG_SKILL);
+            const { id, title, link, image, description } = yield take (mutations.UPDATE_PORTFOLIO);
 
             yield service.post(url + `/portfolio/update`, {
                 id,
@@ -437,7 +433,7 @@ export function* portfolioUpdatingSaga() {
                 description
             });
 
-            const mutation = mutations.setPortfolio(id, title, link, image, description);
+            const mutation = mutations.getPortfolio();
 
             yield put(mutation);
         } catch (e) {

@@ -8,7 +8,7 @@ let defaultState = {
     education: {},
     jobRole: {},
     langSkill: {},
-    portfolio: {},
+    portfolio: [],
     profile: {},
     service: {},
     setting: {},
@@ -83,8 +83,7 @@ export const reducer = combineReducers({
     portfolio:(portfolio = defaultState.portfolio,action)=>{
         switch (action.type) {
             case mutations.SET_PORTFOLIO:
-                const { id, title, link, image, description } = action
-                return { id, title, link, image, description };
+                return [...action.portfolio]
         }
         return portfolio;
     },

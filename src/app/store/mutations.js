@@ -264,13 +264,9 @@ export const updatePortfolio = ({id, title, link, image, description})=>({
     description
 });
 
-export const setPortfolio = (id, title, link, image, description)=>({
+export const setPortfolio = (portfolio)=>({
     type: SET_PORTFOLIO,
-    id,
-    title,
-    link,
-    image,
-    description
+    portfolio
 });
 
 

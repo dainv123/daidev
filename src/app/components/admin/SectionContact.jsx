@@ -1,6 +1,10 @@
 import React from 'react'
 
-function Contact() {
+function Contact(
+    setting,
+    social,
+    updateValue
+) {
     return (
         <div className="row ml-4 mr-4">
             <div className="col-sm-12 mb-4">
@@ -60,15 +64,15 @@ function Contact() {
                         {/* ONE ITEM */}
                         <div className="form-group">
                             <label for="social-title">Title</label>
-                            <input type="text" className="form-control" id="social-title" placeholder="Facebook" />
+                            <input type="text" className="form-control" id="social-title" placeholder="Facebook" value={social.title} onChange={(event) => updateValue('social', 'title', event.target.value)}/>
                         </div>
                         <div className="form-group">
                             <label for="social-date">Icon</label>
-                            <input type="text" className="form-control" id="social-date" placeholder="lnr lnr-code" />
+                            <input type="text" className="form-control" id="social-date" placeholder="lnr lnr-code" value={social.icon} onChange={(event) => updateValue('social', 'icon', event.target.value)}/>
                         </div>
                         <div className="form-group">
                             <label for="social-link">Link</label>
-                            <input type="text" className="form-control" id="social-link" placeholder="" />
+                            <input type="text" className="form-control" id="social-link" placeholder="" value={social.link} onChange={(event) => updateValue('social', 'link', event.target.value)}/>
                         </div>
                     </div>
                 </div>

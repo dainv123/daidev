@@ -1,0 +1,4 @@
+export const PORTFOLIO_TYPE_ENUM = {
+	WEBSITE: 0,
+	MOBILE: 1
+}

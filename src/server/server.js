@@ -14,8 +14,9 @@ import { ProfileRoute } from './api/modules/profile';
 import { ServiceRoute } from './api/modules/service';
 import { SettingRoute } from './api/modules/setting';
 import { SocialRoute } from './api/modules/social';
-import { WorkHistoryRoute } from './api/modules/work-history';
 import { WorkSkillRoute } from './api/modules/work-skill';
+import { WorkHistoryRoute } from './api/modules/work-history';
+import { FileRoute, DownloadFileAuthRoute, DownloadFileIncognitoRoute } from './api/modules/file';
 
 const app = express()
 const port = process.env.PORT || DB_CONFIG.PORT;
@@ -85,6 +86,21 @@ SocialRoute({
 	authJWT
 });
 
+FileRoute({
+	app,
+	authJWT
+})
+
+DownloadFileAuthRoute({
+	app,
+	authJWT
+})
+
+DownloadFileIncognitoRoute({
+	app,
+	authJWT
+})
+
 WorkHistoryRoute({
 	app,
 	authJWT
@@ -94,7 +110,6 @@ WorkSkillRoute({
 	app,
 	authJWT
 });
-
 
 if (process.env.NODE_ENV == `production`) {
 	app.use(express.static(path.resolve(__dirname, '../../dist')));

@@ -8,6 +8,13 @@ const http = () => axios.create({
   }
 })
 
+const httpMultipart = () => axios.create({
+  headers: {
+    'Content-Type': 'multipart/form-data',
+    'Authorization': `Bearer ${cookies.get('accessToken')}`
+  }
+})
+
 export default {
   async get(url, params) {
     try {
@@ -28,4 +35,14 @@ export default {
       return error;
     }
   },
+
+  async postMultipart(url, params) {
+    try {
+      const res = await httpMultipart().post(url, params);
+      return res.data;
+    }
+    catch (error) {
+      return error;
+    }
+  }
 };
