@@ -36,10 +36,10 @@ router.post('/create', async (req, res) => {
         workHistoryDownloadButtonName,
         educationTitle,
         educationSubTitle,
-        langSkillsTitle,
-        langSkillsSubTitle,
-        workSkillsTitle,
-        workSkillsSubTitle,
+        langSkillTitle,
+        langSkillSubTitle,
+        workSkillTitle,
+        workSkillSubTitle,
         contactTitle,
         contactSubtitle,
         contactInfoTitle,
@@ -67,10 +67,10 @@ router.post('/create', async (req, res) => {
 			workHistoryDownloadButtonName,
 			educationTitle,
 			educationSubTitle,
-			langSkillsTitle,
-			langSkillsSubTitle,
-			workSkillsTitle,
-			workSkillsSubTitle,
+			langSkillTitle,
+			langSkillSubTitle,
+			workSkillTitle,
+			workSkillSubTitle,
 			contactTitle,
 			contactSubtitle,
 			contactInfoTitle,
@@ -106,10 +106,10 @@ router.post('/update', async (req, res) => {
         workHistoryDownloadButtonName,
         educationTitle,
         educationSubTitle,
-        langSkillsTitle,
-        langSkillsSubTitle,
-        workSkillsTitle,
-        workSkillsSubTitle,
+        langSkillTitle,
+        langSkillSubTitle,
+        workSkillTitle,
+        workSkillSubTitle,
         contactTitle,
         contactSubtitle,
         contactInfoTitle,
@@ -188,20 +188,20 @@ router.post('/update', async (req, res) => {
             setting.educationSubTitle = educationSubTitle;
         }
 
-        if (langSkillsTitle !== undefined) {
-            setting.langSkillsTitle = langSkillsTitle;
+        if (langSkillTitle !== undefined) {
+            setting.langSkillTitle = langSkillTitle;
         }
 
-		if (langSkillsSubTitle !== undefined) {
-            setting.langSkillsSubTitle = langSkillsSubTitle;
+		if (langSkillSubTitle !== undefined) {
+            setting.langSkillSubTitle = langSkillSubTitle;
         }
 
-        if (workSkillsTitle !== undefined) {
-            setting.workSkillsTitle = workSkillsTitle;
+        if (workSkillTitle !== undefined) {
+            setting.workSkillTitle = workSkillTitle;
         }
 
-		if (workSkillsSubTitle !== undefined) {
-            setting.workSkillsSubTitle = workSkillsSubTitle;
+		if (workSkillSubTitle !== undefined) {
+            setting.workSkillSubTitle = workSkillSubTitle;
         }
 
         if (contactTitle !== undefined) {
