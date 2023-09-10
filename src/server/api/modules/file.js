@@ -1,8 +1,8 @@
 const express = require("express")
 
-const upload = require("../../helper/upload")
-
 const GridFSBucket = require("mongodb").GridFSBucket
+
+const { uploadFileMiddleware, uploadFilesMiddleware } = require("../../helper/upload")
 
 import { DB_CONFIG } from "../../constants"
 
@@ -24,13 +24,13 @@ const ObjectId = require('mongodb').ObjectID
 
 fileRouter.post("/upload", async (req, res) => {
 	try {
-		await upload(req, res)
+		await uploadFileMiddleware(req, res)
 
 		if (req.file == undefined) {
 			return res.status(500).json({ error: MESSAGES.FAILED_NO_UPLOAD_FILE })
 		}
 
-		res.status(200).json()
+		res.status(200).json({ id: req.file.id })
 	} catch (error) {
 		res.status(500).json({ error: MESSAGES.FAILED_UPLOAD_FILE })
 	}
@@ -45,7 +45,6 @@ fileRouter.post('/delete', async (req, res) => {
 		});
 
 		(req.body.ids || []).forEach(async id => {
-			console.log(id);
 			await bucket.delete(new ObjectId(id))
 		});
 
@@ -57,25 +56,30 @@ fileRouter.post('/delete', async (req, res) => {
 
 export const getImagesInformation = async (ids) => {
 	const database = await connectManualDB()
+
 	const images = database.collection(DB_CONFIG.FILE_BUCKET + ".files")
-	const cursor = ids 
-		? images.find({_id: { $in: ids.map(id => new ObjectId(id)) }})
+
+	const list = ids || []
+
+	const cursor = list.length
+		? images.find({ _id: { $in: list.map(id => new ObjectId(id)) }})
 		: images.find({})
 
 	const fileInfos = []
 
-	await cursor.forEach((doc) => {
+	await cursor.forEach((doc, index) => {
 		fileInfos.push({
 			id: doc._id,
+			url: baseIncognitoUrl + doc.filename,
 			name: doc.filename,
-			url: baseIncognitoUrl + doc.filename
+			type: doc.contentType
 		})
 	})
 
 	return fileInfos
 }
 
-fileRouter.get("/get", async (req, res) => {
+fileRouter.post("/get", async (req, res) => {
 	try {
 		const fileInfos = await getImagesInformation(req.body.ids)
 		

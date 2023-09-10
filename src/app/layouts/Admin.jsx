@@ -22,7 +22,7 @@ function Layout(props) {
         <div id="admin-page">
             <div id="wrapper">
                 <SectionSidebar />
-                <div id="content-wrapper" class="d-flex flex-column">
+                <div id="content-wrapper" className="d-flex flex-column">
                     <div id="content">
                         <SectionTopbar user="user" />
                         { props.children }

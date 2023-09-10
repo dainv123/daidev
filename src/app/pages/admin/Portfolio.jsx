@@ -12,9 +12,10 @@ function Portfolio({
     updateSetting,
     portfolio,
     getPortfolio,
-    createPortfolio,
     updatePortfolio,
 }) {
+    let updatingPortfolios = new Object();
+
     const [settingState, setSettingState] = useState(setting);
 
     const [portfolioState, setPortfolioState] = useState(portfolio);
@@ -31,13 +32,15 @@ function Portfolio({
 
     const showSnackbar = () => {};
 
-    const hideSnackbar = () => {};
+    const hideSnackbar = () => {
+        updatingPortfolios = new Object();
+    };
 
     const submitSnackbar = () => {
         const settingCaller = settingState.id ? updateSetting(settingState) : createSetting(settingState);
 
-        const portfolioCaller = portfolioState.id ? updatePortfolio(portfolioState) : createPortfolio(portfolioState);
-
+        const portfolioCaller = updatePortfolio(updatingPortfolios);
+        
         Promise.all([settingCaller, portfolioCaller])
             .then((response) => {
                 console.log('Both mutations were successful!', response);
@@ -49,7 +52,7 @@ function Portfolio({
 
     const updateValue = (type, property, value) => {
         if (type === 'portfolio') {
-            setPortfolioState({ ...portfolioState, [property]: value });
+            updatingPortfolios = value;
         } else {
             setSettingState({ ...settingState, [property]: value });
         }
@@ -66,6 +69,7 @@ function Portfolio({
                 setting={settingState}
                 portfolios={portfolioState}
                 updateValue={updateValue}
+                onChangePortfolio={data => updateValue('portfolio', null, data)}
             ></SectionPortfolio>
         </LayoutAdmin>
     );
@@ -87,10 +91,6 @@ const mapDispatchToProps = dispatch => ({
 
     getPortfolio() {
         dispatch(mutations.getPortfolio());
-    },
-
-    createPortfolio(payload) {
-        dispatch(mutations.createPortfolio(payload));
     },
 
     updatePortfolio(payload) {

@@ -8,11 +8,11 @@ function Resume() {
                     <div className="card-body">
                         <h3>Configuration</h3>
                         <div className="form-group">
-                            <label for="title">Title</label>
+                            <label htmlFor="title">Title</label>
                             <input type="text" className="form-control" id="title" placeholder="RESUME" />
                         </div>
                         <div className="form-group">
-                            <label for="sub-title">Sub Title</label>
+                            <label htmlFor="sub-title">Sub Title</label>
                             <input type="text" className="form-control" id="sub-title" placeholder="ALL MY BACKGROUND" />
                         </div>
                     </div>
@@ -24,32 +24,32 @@ function Resume() {
                     <div className="card-body">
                         <h3>Work History</h3>
                         <div className="form-group">
-                            <label for="professional-title">Title</label>
+                            <label htmlFor="professional-title">Title</label>
                             <input type="text" className="form-control" id="professional-title" placeholder="My Professional" />
                         </div>
                         <div className="form-group">
-                            <label for="work-history">Sub Title</label>
+                            <label htmlFor="work-history">Sub Title</label>
                             <input type="text" className="form-control" id="work-history" placeholder="Work History" />
                         </div>
                         <div className="form-group">
-                            <label for="download-button-name">Download Button Name</label>
+                            <label htmlFor="download-button-name">Download Button Name</label>
                             <input type="text" className="form-control" id="download-button-name" placeholder="Download Resume" />
                         </div>
                         {/* ONE ITEM */}
                         <div className="form-group">
-                            <label for="history-title">Title</label>
+                            <label htmlFor="history-title">Title</label>
                             <input type="text" className="form-control" id="history-title" placeholder="DEVELOPER" />
                         </div>
                         <div className="form-group">
-                            <label for="history-date">Date</label>
+                            <label htmlFor="history-date">Date</label>
                             <input type="text" className="form-control" id="history-date" placeholder="Aug 2018 - Till Now" />
                         </div>
                         <div className="form-group">
-                            <label for="history-description">Description</label>
+                            <label htmlFor="history-description">Description</label>
                             <textarea className="form-control" id="history-description" rows="3"></textarea>
                         </div>
                         <div className="form-group">
-                            <label for="history-image">Image</label>
+                            <label htmlFor="history-image">Image</label>
                             <input type="file" className="form-control-file" id="history-image" />
                         </div>
                     </div>
@@ -61,28 +61,28 @@ function Resume() {
                     <div className="card-body">
                         <h3>Education</h3>
                         <div className="form-group">
-                            <label for="professional-title">Title</label>
+                            <label htmlFor="professional-title">Title</label>
                             <input type="text" className="form-control" id="professional-title" placeholder="My Education" />
                         </div>
                         <div className="form-group">
-                            <label for="work-history">Sub Title</label>
+                            <label htmlFor="work-history">Sub Title</label>
                             <input type="text" className="form-control" id="work-history" placeholder="Background History" />
                         </div>
                         {/* ONE ITEM */}
                         <div className="form-group">
-                            <label for="history-title">Title</label>
+                            <label htmlFor="history-title">Title</label>
                             <input type="text" className="form-control" id="history-title" placeholder="DEVELOPER" />
                         </div>
                         <div className="form-group">
-                            <label for="history-date">Date</label>
+                            <label htmlFor="history-date">Date</label>
                             <input type="text" className="form-control" id="history-date" placeholder="Aug 2018 - Till Now" />
                         </div>
                         <div className="form-group">
-                            <label for="history-description">Description</label>
+                            <label htmlFor="history-description">Description</label>
                             <textarea className="form-control" id="history-description" rows="3"></textarea>
                         </div>
                         <div className="form-group">
-                            <label for="history-image">Image</label>
+                            <label htmlFor="history-image">Image</label>
                             <input type="file" className="form-control-file" id="history-image" />
                         </div>
                     </div>
@@ -94,11 +94,11 @@ function Resume() {
                     <div className="card-body">
                         <h3>Work Skills</h3>
                         <div className="form-group">
-                            <label for="professional-title">Title</label>
+                            <label htmlFor="professional-title">Title</label>
                             <input type="text" className="form-control" id="professional-title" placeholder="My Professional" />
                         </div>
                         <div className="form-group">
-                            <label for="work-history">Sub Title</label>
+                            <label htmlFor="work-history">Sub Title</label>
                             <input type="text" className="form-control" id="work-history" placeholder="Work Skills" />
                         </div>
                         {/* ONE ITEM */}
@@ -125,11 +125,11 @@ function Resume() {
                     <div className="card-body">
                         <h3>Language Skills</h3>
                         <div className="form-group">
-                            <label for="language-title">Title</label>
+                            <label htmlFor="language-title">Title</label>
                             <input type="text" className="form-control" id="language-title" placeholder="My Professional" />
                         </div>
                         <div className="form-group">
-                            <label for="language-history">Sub Title</label>
+                            <label htmlFor="language-history">Sub Title</label>
                             <input type="text" className="form-control" id="language-history" placeholder="Language Skills" />
                         </div>
                         {/* ONE ITEM */}

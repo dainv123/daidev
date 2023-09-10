@@ -25,25 +25,25 @@ const url = process.env.NODE_ENV === 'production' ? `` : `http://localhost:2040`
 //     }
 // }
 
-export function* commentCreationSaga(){
-    while (true) {
-        const comment = yield take (mutations.ADD_TASK_COMMENT);
-        axios.post(url + `/comment/new`,{comment})
-    }
-}
+// export function* commentCreationSaga(){
+//     while (true) {
+//         const comment = yield take (mutations.ADD_TASK_COMMENT);
+//         axios.post(url + `/comment/new`,{comment})
+//     }
+// }
 
-export function* taskModificationSaga(){
-    while (true){
-        const task = yield take([mutations.SET_TASK_GROUP, mutations.SET_TASK_NAME,mutations.SET_TASK_COMPLETE]);
-        axios.post(url + `/task/update`,{
-            task:{
-                id:task.taskID,
-                group:task.groupID,
-                name:task.name,
-                isComplete:task.isComplete
-            }});
-    }
-}
+// export function* taskModificationSaga(){
+//     while (true){
+//         const task = yield take([mutations.SET_TASK_GROUP, mutations.SET_TASK_NAME,mutations.SET_TASK_COMPLETE]);
+//         axios.post(url + `/task/update`,{
+//             task:{
+//                 id:task.taskID,
+//                 group:task.groupID,
+//                 name:task.name,
+//                 isComplete:task.isComplete
+//             }});
+//     }
+// }
 
 export function* userAuthenticationSaga(){
     while (true){
@@ -390,28 +390,23 @@ export function* portfolioGettingSaga(){
         try {
             const response = yield service.get(url + `/portfolio/get`);
 
-            const mutation = mutations.setPortfolio(response || []);
+            const imageIds = response.reduce((acc, item) => acc.concat(item.images || []), []);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+            let images = yield service.post(url + `/file/get`, { ids: imageIds })
+            
+            const medium = response.reduce((acc, item) => {
+                const newAcc = acc
+                
+                images = images && images.length ? images : []
 
-export function* portfolioCreationSaga() {
-    while (true){
-        try {
-            const { title, link, image, description } = yield take (mutations.CREATE_PORTFOLIO);
+                const expect = item.images.map(id => images.find(image => image.id == id)).filter(img => img)
 
-             yield service.post(url + `/portfolio/create`, {
-                title, 
-                link, 
-                image, 
-                description
-            });
+                newAcc.push({ ...item, images: expect })
 
-            const mutation = mutations.getPortfolio();
+                return newAcc
+            }, []);
+
+            const mutation = mutations.setPortfolio(medium || []);
 
             yield put(mutation);
         } catch (e) {
@@ -421,21 +416,93 @@ export function* portfolioCreationSaga() {
 }
 
 export function* portfolioUpdatingSaga() {
-    while (true){
+    while (true) {
         try {
-            const { id, title, link, image, description } = yield take (mutations.UPDATE_PORTFOLIO);
+            let uploadResponse = []
 
-            yield service.post(url + `/portfolio/update`, {
-                id,
-                title, 
-                link, 
-                image, 
-                description
-            });
+            const { 
+                uploading, 
+                deleting, 
+                portfoliosUpdating,
+                portfoliosDeleting
+            } = yield take (mutations.UPDATE_PORTFOLIO)
 
-            const mutation = mutations.getPortfolio();
+            if (deleting && deleting.length) {
+                service.post(url + `/file/delete`, { ids: deleting })
+            }
 
-            yield put(mutation);
+            if (portfoliosDeleting && portfoliosDeleting.length) {
+                service.post(url + `/portfolio/delete`, { ids: portfoliosDeleting })
+            }
+
+            if (uploading && uploading.length) {
+                const uploadRequest = []
+
+                uploading.forEach(element => {
+                    const uploadingFormData = new FormData()
+
+                    uploadingFormData.append(
+                        "file",
+                        element.file,
+                        element.file.name
+                    );
+
+                    uploadRequest.push(service.postMultipart(url + `/file/upload`, uploadingFormData))
+                });
+
+                uploadResponse = yield Promise.all(uploadRequest)
+
+                uploadResponse = uploadResponse.map((response, index) => ({ 
+                    id: response.id, 
+                    elementId: uploading[index].id 
+                }))
+            }
+
+            if (portfoliosUpdating && portfoliosUpdating.length) {
+                const payload = portfoliosUpdating.map(item => {
+                    const {
+                        _id: id, 
+                        title, 
+                        link, 
+                        description, 
+                        images, 
+                        isNew, 
+                        type 
+                    } = item;
+
+                    const imagesUpdated = 
+                        images
+                        .map(img => {
+                            const found = uploadResponse.find(it => it.elementId === img.id);
+                            return found ? found.id : img.id
+                        })
+                        .filter(img => img)
+
+                    return {
+                        id,
+                        isNew,
+                        title,
+                        type,
+                        link,
+                        description,
+                        images: imagesUpdated
+                    }
+                })
+        
+                
+                yield service.post(url + `/portfolio/update`, payload);
+            }
+
+            if (
+                deleting && deleting.length || 
+                uploading && uploading.length || 
+                portfoliosDeleting && portfoliosDeleting.length || 
+                portfoliosUpdating && portfoliosUpdating.length
+            ) 
+            {
+                const mutation = mutations.getPortfolio();
+                yield put(mutation);
+            }
         } catch (e) {
             console.log(e);
         }
@@ -585,7 +652,7 @@ export function* socialGettingSaga(){
         yield take(mutations.GET_SOCIAL);
 
         try {
-            const response = yield social.get(url + `/social/get`);
+            const response = yield service.get(url + `/social/get`);
 
             const {_id: id, icon, title, link} = response.length ? response[0] : {};
 
@@ -603,7 +670,7 @@ export function* socialCreationSaga() {
         try {
             const { icon, title, link } = yield take (mutations.CREATE_SOCIAL);
 
-            const response = yield social.post(url + `/social/create`, {
+            const response = yield service.post(url + `/social/create`, {
                 icon,
                 title,
                 link
@@ -625,7 +692,7 @@ export function* socialUpdatingSaga() {
         try {
             const { id, icon, title, link } = yield take (mutations.UPDATE_SOCIAL);
 
-            yield social.post(url + `/social/update`, {
+            yield service.post(url + `/social/update`, {
                 id,
                 icon,
                 title,
@@ -647,7 +714,7 @@ export function* workHistoryGettingSaga(){
         yield take(mutations.GET_WORK_HISTORY);
 
         try {
-            const response = yield workHistory.get(url + `/work-history/get`);
+            const response = yield service.get(url + `/work-history/get`);
 
             const {_id: id, date, title, image, description} = response.length ? response[0] : {};
 
@@ -665,7 +732,7 @@ export function* workHistoryCreationSaga() {
         try {
             const { date, title, image, description } = yield take (mutations.CREATE_WORK_HISTORY);
 
-            const response = yield workHistory.post(url + `/work-history/create`, {
+            const response = yield service.post(url + `/work-history/create`, {
                 date,
                 title,
                 image,
@@ -688,7 +755,7 @@ export function* workHistoryUpdatingSaga() {
         try {
             const { id, date, title, image, description } = yield take (mutations.UPDATE_WORK_HISTORY);
 
-            yield workHistory.post(url + `/work-history/update`, {
+            yield service.post(url + `/work-history/update`, {
                 id,
                 date,
                 title,
@@ -712,7 +779,7 @@ export function* workSkillGettingSaga(){
         yield take(mutations.GET_WORK_SKILL);
 
         try {
-            const response = yield workSkill.get(url + `/work-skill/get`);
+            const response = yield service.get(url + `/work-skill/get`);
 
             const {_id: id, title, percent} = response.length ? response[0] : {};
 
@@ -730,7 +797,7 @@ export function* workSkillCreationSaga() {
         try {
             const { title, percent } = yield take (mutations.CREATE_WORK_SKILL);
 
-            const response = yield workSkill.post(url + `/work-skill/create`, {
+            const response = yield service.post(url + `/work-skill/create`, {
                 title,
                 percent
             });
@@ -751,7 +818,7 @@ export function* workSkillUpdatingSaga() {
         try {
             const { id, title, percent } = yield take (mutations.UPDATE_WORK_SKILL);
 
-            yield workSkill.post(url + `/work-skill/update`, {
+            yield service.post(url + `/work-skill/update`, {
                 id,
                 title,
                 percent
@@ -773,10 +840,10 @@ export function* settingGettingSaga(){
         yield take(mutations.GET_SETTING);
 
         try {
-            const response = yield setting.get(url + `/setting/get`);
+            const response = yield service.get(url + `/setting/get`);
 
             const {
-                _id: id, 
+                _id, 
                 aboutMeTitle,
                 aboutMeSubTitle,
                 aboutMeLink,
@@ -803,10 +870,10 @@ export function* settingGettingSaga(){
                 contactInfoTitle,
                 contactInfoSubtitle,
                 socialTitle
-            } = response.length ? response[0] : {};
+            } = response || {};
 
             const mutation = mutations.setSetting(
-                id, 
+                _id, 
                 aboutMeTitle,
                 aboutMeSubTitle,
                 aboutMeLink,
@@ -874,7 +941,7 @@ export function* settingCreationSaga() {
                 socialTitle
             } = yield take (mutations.CREATE_SETTING);
 
-            const response = yield setting.post(url + `/setting/create`, {
+            const response = yield service.post(url + `/setting/create`, {
                 aboutMeTitle,
                 aboutMeSubTitle,
                 aboutMeLink,
@@ -975,7 +1042,7 @@ export function* settingUpdatingSaga() {
                 socialTitle
             } = yield take (mutations.UPDATE_SETTING);
 
-            yield setting.post(url + `/setting/update`, {
+            yield service.post(url + `/setting/update`, {
                 id,
                 aboutMeTitle,
                 aboutMeSubTitle,

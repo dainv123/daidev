@@ -39,7 +39,7 @@ const Login = ({ authenticateUser, authenticated }) => {
                                                 <div className="form-group">
                                                     <div className="custom-control custom-checkbox small">
                                                         <input type="checkbox" className="custom-control-input" id="customCheck" />
-                                                        <label className="custom-control-label" for="customCheck">Remember
+                                                        <label className="custom-control-label" htmlFor="customCheck">Remember
                                                             Me</label>
                                                     </div>
                                                 </div>

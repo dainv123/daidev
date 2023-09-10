@@ -1,7 +1,10 @@
-const util = require("util")
-const multer = require("multer")
-const { GridFsStorage } = require("multer-gridfs-storage")
 import { DB_CONFIG } from '../constants'
+
+const util = require("util")
+
+const multer = require("multer")
+
+const { GridFsStorage } = require("multer-gridfs-storage")
 
 const storage = new GridFsStorage({
 	url: DB_CONFIG.URL,
@@ -23,8 +26,10 @@ const storage = new GridFsStorage({
 	}
 });
 
-const uploadFiles = multer({ storage: storage }).single("file");
+const uploadFile = multer({ storage: storage }).single("file");
 
-const uploadFilesMiddleware = util.promisify(uploadFiles);
+const uploadFiles = multer({ storage: storage }).array('file', 10);
 
-module.exports = uploadFilesMiddleware;
+export const uploadFileMiddleware = util.promisify(uploadFile);
+
+export const uploadFilesMiddleware = util.promisify(uploadFiles);

@@ -107,6 +107,7 @@ export const reducer = combineReducers({
         switch (action.type) {
             case mutations.SET_SETTING:
                 const { 
+                    id,
                     aboutMeTitle,
                     aboutMeSubTitle,
                     aboutMeLink,
@@ -135,6 +136,7 @@ export const reducer = combineReducers({
                     socialTitle,
                 } = action
                 return { 
+                    id,
                     aboutMeTitle,
                     aboutMeSubTitle,
                     aboutMeLink,

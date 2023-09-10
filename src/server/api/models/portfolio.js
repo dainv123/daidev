@@ -9,6 +9,7 @@ const PortfolioSchema = new mongoose.Schema({
     title: String,
     link: String,
     images: [String],
+    type: Number,
     description: String
 });
 

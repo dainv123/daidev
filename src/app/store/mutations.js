@@ -240,28 +240,23 @@ export const setLangSkill = (id, title, point)=>({
 // portfolio
 export const SET_PORTFOLIO = `SET_PORTFOLIO`;
 export const GET_PORTFOLIO = `GET_PORTFOLIO`;
-export const CREATE_PORTFOLIO = `CREATE_PORTFOLIO`;
 export const UPDATE_PORTFOLIO = `UPDATE_PORTFOLIO`;
 
 export const getPortfolio = ()=>({
     type: GET_PORTFOLIO
 });
 
-export const createPortfolio = ({title, link, image, description})=>({
-    type: CREATE_PORTFOLIO,
-    title,
-    link,
-    image,
-    description
+export const mapPortfolioFile = ()=>({
+    type: MAP_PORTFOLIO_FILE
 });
 
-export const updatePortfolio = ({id, title, link, image, description})=>({
+
+export const updatePortfolio = ({uploading, deleting, portfoliosUpdating, portfoliosDeleting})=>({
     type: UPDATE_PORTFOLIO,
-    id,
-    title,
-    link,
-    image,
-    description
+    uploading,
+    deleting,
+    portfoliosUpdating,
+    portfoliosDeleting
 });
 
 export const setPortfolio = (portfolio)=>({

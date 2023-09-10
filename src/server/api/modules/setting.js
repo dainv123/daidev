@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/get', async (req, res) => {
     try {
-        const settings = await SettingModel.find({
+        const settings = await SettingModel.findOne({
             user: req.user.id
         });
 

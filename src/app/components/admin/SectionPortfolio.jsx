@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from 'react'
-import service from '../../helper/service'
 
-const fileData = (file) => {
-    if (file) {
+const FileData = ({file}) => {
+    const [fileState, setFileState] = useState(file);
+    
+    useEffect(() => setFileState(file), [file]);
+
+    if (fileState.url) {
         return (
             <div>
-                <h2>File Details:</h2>
-                <p>File Name: {file.name}</p>
-
-                <p>File Type: {file.type}</p>
-
-                <p>
-                    Last Modified:{" "}
-                    {file.lastModifiedDate.toDateString()}
-                </p>
-
+                <h4>File Details:</h4>
+                <p>File Name: {fileState.name}</p>
+                <p>File Type: {fileState.type}</p>
+                <img src={fileState.url} width="auto" height="200" />
+            </div>
+        );
+    } else if (fileState.file) {
+        return (
+            <div>
+                <h4>File Details:</h4>
+                <p>File Name: {fileState.file.name}</p>
+                <p>File Type: {fileState.file.type}</p>
             </div>
         );
     } else {
         return (
             <div>
-                <br />
                 <h4>Choose before Pressing the Upload button</h4>
             </div>
         );
@@ -31,11 +35,11 @@ const ImageElement = ({image, removeImage, updatedImage}) => {
     const onFileChange = (event) => updatedImage(image.id, event.target.files[0]);
 
     return (
-        <div className="form-group">
-            <label for="web-image">Image</label>
-            <button onClick={removeImage(image.id)}> Remove image</button>
-            <input type="file" onChange={onFileChange} />
-            {fileData(image.file)}
+        <div className="form-group" style={{ border:1 + 'px solid' }}>
+            <h4>Update or add new:</h4>
+            <button onClick={() => removeImage(image.id)}>Remove this image</button>
+            <input onChange={(event) => onFileChange(event)} type="file" accept="image/png, image/jpeg" multiple/>
+            <FileData file={image}/>
         </div>
     )
 }
@@ -46,56 +50,36 @@ const CardBodyElement = ({
     removeImage, 
     updatedImage,
     removePortfolio, 
-    updatedPortfolio
+    updatePortfolio
 }) => {
     const [portfolioState, setPortfolioState] = useState(portfolio);
     
     useEffect(() => setPortfolioState(portfolio), [portfolio]);
 
-    // const [images, setImages] = useState([]);
-
-    // const addImage = () => {
-    //     const result = structuredClone(images)
-    //     result.push({ file: '', id: images.length })
-    //     setImages(result)
-    // };
-
-    // const removeImage = (id) => {
-    //     const result = images.filter(item => item.id !== id)
-    //     setImages(result)
-    // };
-
-    // const selectedImage = (id, file) => {
-    //     const result = images.map(item => (item.id !== id ? item : { ...item, file }))
-    //     setImages(result)
-    // }
-
-    // useEffect(() => setImages(props.images || []), [props.images]);
-
     return (
         <div>
-            <button onClick={removePortfolio(portfolio.id)}> Remove portfolio</button>
+            <button onClick={() => removePortfolio(portfolio._id)}> Remove portfolio</button>
             <div className="form-group">
-                <label for="mb-title">Title</label>
-                <input type="text" className="form-control" id="mb-title" placeholder="Project Name" value={portfolioState.title} onChange={(event) => updatedPortfolio(portfolio.id, 'title', event.target.value)}/>
+                <label htmlFor="mb-title">Title</label>
+                <input type="text" className="form-control" id="mb-title" value={portfolioState.title} onChange={(event) => updatePortfolio(portfolio._id, 'title', event.target.value)}/>
             </div>
             <div className="form-group">
-                <label for="mb-description">Description</label>
-                <textarea className="form-control" id="mb-description" rows="3" value={portfolioState.description} onChange={(event) => updatedPortfolio(portfolio.id, 'description', event.target.value)}></textarea>
+                <label htmlFor="mb-description">Description</label>
+                <textarea className="form-control" id="mb-description" rows="3" value={portfolioState.description} onChange={(event) => updatePortfolio(portfolio._id, 'description', event.target.value)}></textarea>
             </div>
             <div className="form-group">
-                <label for="mb-date">Link</label>
-                <input type="text" className="form-control" id="mb-date" placeholder="" value={portfolioState.link} onChange={(event) => updatedPortfolio(portfolio.id, 'link', event.target.value)}/>
+                <label htmlFor="mb-date">Link</label>
+                <input type="text" className="form-control" id="mb-date" placeholder="" value={portfolioState.link} onChange={(event) => updatePortfolio(portfolio._id, 'link', event.target.value)}/>
             </div>
-            <button onClick={addImage}>Add image</button>
+            <button onClick={() => addImage(portfolio._id)}>Add image</button>
             <div>
             {
-                images.map(image => (
-                    <ImageElement 
+                portfolio.images.map(image => (
+                    image && <ImageElement 
                         key={image.id} 
                         image={image} 
-                        removeImage={removeImage} 
-                        updatedImage={updatedImage} 
+                        removeImage={imageId => removeImage(portfolio._id, imageId)} 
+                        updatedImage={(imageId, file) => updatedImage(portfolio._id, imageId, file)} 
                     />
                 ))
             }
@@ -107,52 +91,176 @@ const CardBodyElement = ({
 function Portfolio({
     setting,
     portfolios,
-    updateValue
+    updateValue,
+    onChangePortfolio
 }) {
-    const [portfoliosState, setPortfoliosState] = useState(portfolios);
+    const PORTFOLIO_TYPE_ENUM = {
+        WEB: 0,
+        MOBILE: 1
+    }
+
+    const getUID = () => new Date().getTime().toString()
+
+    const [portfolioAll, setPortfolioAll] = useState(portfolios)
+
+    const [portfolioWeb, setPortfolioWeb] = useState([])
     
-    useEffect(() => setPortfoliosState(portfolios), [portfolios]);
+    const [portfolioMobile, setPortfolioMobile] = useState([])
+    
+    const [deletingImages, setDeletingImages] = useState([])
 
-    const test = [
-        {
-            id: '',
+    useEffect(() => { setDeletingImages([]); setPortfolioAll(JSON.parse(JSON.stringify(portfolios))) }, [portfolios])
+
+    useEffect(() => {
+        let uploadImages = []
+        
+        let portfolioWebMedium = []
+        
+        let portfolioMobileMedium = []
+
+        const portfoliosDeleting = 
+            portfolios
+            .filter(element => !portfolioAll.some(item => item._id === element._id))
+            .map(element => element._id)
+
+        portfolioAll.forEach(element => {
+            const list = 
+                element
+                .images
+                .filter(image => image && !image.url)
+                .map(image => ({ id: image.id, file: image.file }))
+
+            uploadImages = uploadImages.concat(list)
+
+            if (element.type === PORTFOLIO_TYPE_ENUM.WEB) {
+                portfolioWebMedium.push(element)
+            } else {
+                portfolioMobileMedium.push(element)
+            }
+        });
+        
+        setPortfolioWeb(portfolioWebMedium.map(item => item))
+
+        setPortfolioMobile(portfolioMobileMedium.map(item => item))
+
+        onChangePortfolio({
+            deleting: deletingImages,
+            uploading: uploadImages,
+            portfoliosUpdating: portfolioAll,
+            portfoliosDeleting: portfoliosDeleting
+        })
+    }, [portfolioAll])
+
+    const addImage = (portfolioId) => {
+        let medium = portfolioAll
+
+        medium = medium.map(item => {
+            if (item._id === portfolioId) {
+                item.images.push({
+                    id: getUID(),
+                    file: null
+                })
+            }
+
+            return item
+        })
+
+        setPortfolioAll(medium)
+    }
+
+    const removeImage = (portfolioId, imageId) => {
+        const deleted = [...deletingImages]
+
+        deleted.push(imageId)
+
+        setDeletingImages(deleted)
+
+        let medium = portfolioAll
+        
+        medium = medium.map(item => {
+            if (item._id === portfolioId) {
+                const images = item.images
+
+                const index = item.images.findIndex(i => i.id === imageId)
+
+                images.splice(index, 1)
+
+                item.images = images
+            }
+
+            return item;
+        })
+
+        setPortfolioAll(medium)
+    }
+
+    const updatedImage = (portfolioId, imageId, file) => {
+        let medium = portfolioAll
+
+        medium = medium.map(item => {
+            if (item._id === portfolioId) {
+                item.images = item.images.map(img => {
+                    if (img.id === imageId) {
+                        return ({
+                            ...img,
+                            url: null,
+                            name: null,
+                            type: null,
+                            file: file
+                        })
+                    }
+
+                    return img
+                })
+            }
+            return item
+        })
+
+        setPortfolioAll(medium)
+    }
+
+    const addPortfolio = (type = PORTFOLIO_TYPE_ENUM.WEB) => {
+        const medium = portfolioAll
+
+        medium.push(new Object({
+            _id: getUID(),
+            isNew: true,
+            type: type,
+            link: '',
             title: '',
-            type: 1,
-            description: '',
-            images: [
-                {
-                    id: '',
-                    name: '',
-                    url: ''
-                }
-            ]
-        }
-    ]
+            describe: '',
+            images: []
+        }))
 
-    // useEffect(() => {
-    //     service.get(`http://localhost:2040/file/get`)
-    //     service.get(`http://localhost:2040/file-incognito/1691161671302-bezkoder-appadcive.jpg`)
-    // }, []);
+        setPortfolioAll(medium.map(item => item))
+    }
 
+    const removePortfolio = (portfolioId) => {
+        const medium = portfolioAll
 
-    const onFileUpload = (selectedFile) => {
-        const formData = new FormData();
+        const index = medium.findIndex(i => i._id === portfolioId)
 
-        formData.append(
-            "file",
-            selectedFile,
-            selectedFile.name
-        );
+        const deleted = [...deletingImages].concat((medium[index].images || []).map(element => element.id))
 
-        service.postMultipart(`http://localhost:2040/file/upload`, formData)
-    };
+        medium.splice(index, 1)
 
-    const addImage = () => {}
-    const removeImage = () => {}
-    const updatedImage = () => {}
-    const addPortfolio = () => {}
-    const removePortfolio = () => {}
-    const updatedPortfolio = () => {}
+        setPortfolioAll(medium.map(item => item))
+
+        setDeletingImages(deleted)
+    }
+    
+    const updatePortfolio = (portfolioId, property, value) => {
+        let medium = portfolioAll
+
+        medium = medium.map(item => {
+            if (item._id === portfolioId) {
+                item[property] = value
+            }
+            return item
+        })
+
+        setPortfolioAll(medium)
+    }
 
     return (
         <div className="row ml-4 mr-4">
@@ -161,11 +269,11 @@ function Portfolio({
                     <div className="card-body">
                         <h3>Configuration</h3>
                         <div className="form-group">
-                            <label for="title">Title</label>
+                            <label htmlFor="title">Title</label>
                             <input type="text" className="form-control" id="title" placeholder="PORTFOLIO" value={setting.portfolioTitle} onChange={(event) => updateValue('setting', 'portfolioTitle', event.target.value)} />
                         </div>
                         <div className="form-group">
-                            <label for="sub-title">Sub Title</label>
+                            <label htmlFor="sub-title">Sub Title</label>
                             <input type="text" className="form-control" id="sub-title" placeholder="SAMPLES OF SOME OF MY WORK FROM THE PAST YEAR." value={setting.portfolioSubTitle} onChange={(event) => updateValue('setting', 'portfolioSubTitle', event.target.value)} />
                         </div>
                     </div>
@@ -175,22 +283,22 @@ function Portfolio({
                 <div className="card">
                     <div className="card-body">
                         <h3>Website</h3>
-                        {/* <div className="form-group">
-                            <label for="web-title">Title</label>
-                            <input type="text" className="form-control" id="web-title" placeholder="Project Name" value={portfolio.title} onChange={(event) => updateValue('portfolio', 'title', event.target.value)}/>
-                        </div>
-                        <div className="form-group">
-                            <label for="web-description">Description</label>
-                            <textarea className="form-control" id="web-description" rows="3" value={portfolio.description} onChange={(event) => updateValue('portfolio', 'description', event.target.value)}></textarea>
-                        </div>
-                        <div className="form-group">
-                            <label for="web-date">Link</label>
-                            <input type="text" className="form-control" id="web-date" placeholder="" value={portfolio.link} onChange={(event) => updateValue('portfolio', 'link', event.target.value)}/>
-                        </div>
-                        <div className="form-group">
-                            <label for="web-image">Image</label>
-                            <input type="text" className="form-control-file" id="web-image" value={portfolio.image} onChange={(event) => updateValue('portfolio', 'image', event.target.value)}/>
-                        </div> */}
+                        <button onClick={() => addPortfolio(PORTFOLIO_TYPE_ENUM.WEB)}>Add Website Portfolio Item</button>
+                        {
+                            portfolioWeb.map(portfolio => 
+                                (
+                                    <CardBodyElement 
+                                        key={portfolio._id} 
+                                        portfolio={portfolio}
+                                        addImage={portfolioId => addImage(portfolioId)} 
+                                        removeImage={(portfolioId, imageId) => removeImage(portfolioId, imageId)} 
+                                        updatedImage={(portfolioId, imageId, file) => updatedImage(portfolioId, imageId, file)}
+                                        removePortfolio={portfolioId => removePortfolio(portfolioId)} 
+                                        updatePortfolio={(portfolioId, key, value) => updatePortfolio(portfolioId, key, value)}
+                                    ></CardBodyElement>
+                                )
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -198,18 +306,18 @@ function Portfolio({
                 <div className="card">
                     <div className="card-body">
                         <h3>Mobile</h3>
-                        <button onClick={addPortfolio}>Add Portfolio Item</button>
+                        <button onClick={() => addPortfolio(PORTFOLIO_TYPE_ENUM.MOBILE)}>Add Mobile Portfolio Item</button>
                         {
-                            portfoliosState.map(portfolio => 
+                            portfolioMobile.map(portfolio => 
                                 (
                                     <CardBodyElement 
-                                        key={portfolio.id} 
+                                        key={portfolio._id} 
                                         portfolio={portfolio}
-                                        addImage={addImage} 
-                                        removeImage={removeImage} 
-                                        updatedImage={updatedImage}
-                                        removePortfolio={removePortfolio} 
-                                        updatedPortfolio={updatedPortfolio}
+                                        addImage={portfolioId => addImage(portfolioId)} 
+                                        removeImage={(portfolioId, imageId) => removeImage(portfolioId, imageId)} 
+                                        updatedImage={(portfolioId, imageId, file) => updatedImage(portfolioId, imageId, file)}
+                                        removePortfolio={portfolioId => removePortfolio(portfolioId)} 
+                                        updatePortfolio={(portfolioId, key, value) => updatePortfolio(portfolioId, key, value)}
                                     ></CardBodyElement>
                                 )
                             )
