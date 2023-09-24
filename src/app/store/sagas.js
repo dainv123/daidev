@@ -199,63 +199,198 @@ export function* achievementUpdatingSaga() {
 }
 
 // education
-export function* educationGettingSaga(){
+export function* resumeGettingSaga(){
     while (true){
-        yield take(mutations.GET_EDUCATION);
+        yield take(mutations.GET_RESUME)
 
         try {
-            const response = yield service.get(url + `/education/get`);
+            const education = yield service.get(url + `/education/get`)
+            const langSkill = yield service.get(url + `/lang-skill/get`)
+            const workSkill = yield service.get(url + `/work-skill/get`)
+            const workHistory = yield service.get(url + `/work-history/get`)
+            
+            const imageIds = [...education, ...workHistory].reduce((acc, item) => 
+                item.image ? acc.concat([item.image]) : acc, [])
 
-            const {_id: id, title, date, image, description} = response.length ? response[0] : {};
+            if (!imageIds.length) {
+                yield put(mutations.setResume({
+                    langSkill,
+                    workSkill,
+                    education: education,
+                    workHistory: workHistory
+                }))
+                
+                return;
+            }
 
-            const mutation = mutations.setEducation(id, title, date, image, description);
+            let images = yield service.post(url + `/file/get`, { ids: imageIds })
 
-            yield put(mutation);
+            images = (images && images.length) ? images : []
+            
+            const modifier = (input) => input.reduce((acc, item) => {
+                const newAcc = acc
+                
+                newAcc.push({ 
+                    ...item, 
+                    image: images.find(image => image.id == item.image) || null 
+                }) 
+
+                return newAcc
+            }, []) || []
+
+            yield put(mutations.setResume({
+                langSkill,
+                workSkill,
+                education: modifier(education),
+                workHistory: modifier(workHistory)
+            }))
         } catch (e) {
             console.log(e);
         }
     }
 }
 
-export function* educationCreationSaga() {
-    while (true){
+export function* resumeUpdatingSaga() {
+    while (true) {
         try {
-            const { title, date, image, description } = yield take (mutations.CREATE_EDUCATION);
+            let uploadResponse = []
 
-            const response = yield service.post(url + `/education/create`, {
-                date,
-                title,
-                image,
-                description
-            });
+            const { 
+                uploading, 
+                deleting, 
+                educationUpdating,
+                educationDeleting,
+                workHistoryUpdating, 
+                workHistoryDeleting,
+                langSkillUpdating, 
+                langSkillDeleting,
+                workSkillUpdating, 
+                workSkillDeleting
+            } = yield take (mutations.UPDATE_RESUME)
+            
 
-            const {_id: id} = response.length ? response[0] : {};
+            if (deleting && deleting.length) {
+                service.post(url + `/file/delete`, { ids: deleting })
+            }
 
-            const mutation = mutations.setEducation(id, date, title, image, description);
+            if (uploading && uploading.length) {
+                const uploadRequest = []
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+                uploading.forEach(element => {
+                    const uploadingFormData = new FormData()
 
-export function* educationUpdatingSaga() {
-    while (true){
-        try {
-            const { id, title, date, image, description } = yield take (mutations.UPDATE_EDUCATION);
+                    uploadingFormData.append(
+                        "file",
+                        element.file,
+                        element.file.name
+                    );
 
-            yield service.post(url + `/education/update`, {
-                id,
-                date,
-                title,
-                image,
-                description
-            });
+                    uploadRequest.push(service.postMultipart(url + `/file/upload`, uploadingFormData))
+                });
 
-            const mutation = mutations.setEducation(id, date, title, image, description);
+                uploadResponse = yield Promise.all(uploadRequest)
 
-            yield put(mutation);
+                uploadResponse = uploadResponse.map((response, index) => ({ 
+                    id: response.id, 
+                    elementId: uploading[index].id 
+                }))
+            }
+
+            if (educationDeleting && educationDeleting.length) {
+                service.post(url + `/education/delete`, { ids: educationDeleting })
+            }
+
+            if (workHistoryDeleting && workHistoryDeleting.length) {
+                service.post(url + `/work-history/delete`, { ids: workHistoryDeleting })
+            }
+
+            if (langSkillDeleting && langSkillDeleting.length) {
+                service.post(url + `/lang-skill/delete`, { ids: langSkillDeleting })
+            }
+
+            if (workSkillDeleting && workSkillDeleting.length) {
+                service.post(url + `/work-skill/delete`, { ids: workSkillDeleting })
+            }
+            
+                
+            yield service.post(url + `/education/update`, educationUpdating.map(item => {
+                const {
+                    _id: id, 
+                    date, 
+                    image,
+                    title, 
+                    isNew,
+                    description
+                } = item;
+
+                const found = uploadResponse.find(it => it.elementId === (image && image.id));
+
+                return {
+                    id,
+                    date, 
+                    title, 
+                    isNew,
+                    description, 
+                    image: found ? found.id : image ? image.id : null
+                }
+            }));
+
+            yield service.post(url + `/work-history/update`, workHistoryUpdating.map(item => {
+                const {
+                    _id: id, 
+                    date, 
+                    image,
+                    title, 
+                    isNew,
+                    description
+                } = item;
+
+                const found = uploadResponse.find(it => it.elementId === (image && image.id));
+
+                return {
+                    id,
+                    date, 
+                    title, 
+                    isNew,
+                    description, 
+                    image: found ? found.id : image ? image.id : null
+                }
+            }));
+
+            yield service.post(url + `/work-skill/update`, workSkillUpdating.map(item => {
+                const {
+                    _id: id, 
+                    title, 
+                    percent,
+                    isNew,
+                } = item;
+
+                return {
+                    id,
+                    title, 
+                    percent,
+                    isNew,
+                }
+            }));
+
+            yield service.post(url + `/lang-skill/update`, langSkillUpdating.map(item => {
+                const {
+                    _id: id, 
+                    title, 
+                    point,
+                    isNew,
+                } = item;
+
+                return {
+                    id,
+                    title, 
+                    point,
+                    isNew,
+                }
+            }));
+
+            // TRIGGER RECALL DATA
+            yield put(mutations.getResume());
         } catch (e) {
             console.log(e);
         }
@@ -323,64 +458,64 @@ export function* jobRoleUpdatingSaga() {
 
 
 // lang-skill
-export function* langSkillGettingSaga(){
-    while (true){
-        yield take(mutations.GET_LANG_SKILL);
+// export function* langSkillGettingSaga(){
+//     while (true){
+//         yield take(mutations.GET_LANG_SKILL);
 
-        try {
-            const response = yield service.get(url + `/lang-skill/get`);
+//         try {
+//             const response = yield service.get(url + `/lang-skill/get`);
 
-            const {_id: id, title, point} = response.length ? response[0] : {};
+//             const {_id: id, title, point} = response.length ? response[0] : {};
 
-            const mutation = mutations.setLangSkill(id, title, point);
+//             const mutation = mutations.setLangSkill(id, title, point);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+//             yield put(mutation);
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     }
+// }
 
-export function* langSkillCreationSaga() {
-    while (true){
-        try {
-            const { title, point } = yield take (mutations.CREATE_LANG_SKILL);
+// export function* langSkillCreationSaga() {
+//     while (true){
+//         try {
+//             const { title, point } = yield take (mutations.CREATE_LANG_SKILL);
 
-            const response = yield service.post(url + `/lang-skill/create`, {
-                title,
-                point
-            });
+//             const response = yield service.post(url + `/lang-skill/create`, {
+//                 title,
+//                 point
+//             });
 
-            const {_id: id} = response.length ? response[0] : {};
+//             const {_id: id} = response.length ? response[0] : {};
 
-            const mutation = mutations.setLangSkill(id, title, point);
+//             const mutation = mutations.setLangSkill(id, title, point);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+//             yield put(mutation);
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     }
+// }
 
-export function* langSkillUpdatingSaga() {
-    while (true){
-        try {
-            const { id, title, point } = yield take (mutations.UPDATE_LANG_SKILL);
+// export function* langSkillUpdatingSaga() {
+//     while (true){
+//         try {
+//             const { id, title, point } = yield take (mutations.UPDATE_LANG_SKILL);
 
-            yield service.post(url + `/lang-skill/update`, {
-                id,
-                title,
-                point
-            });
+//             yield service.post(url + `/lang-skill/update`, {
+//                 id,
+//                 title,
+//                 point
+//             });
 
-            const mutation = mutations.setLangSkill(id, title, point);
+//             const mutation = mutations.setLangSkill(id, title, point);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+//             yield put(mutation);
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     }
+// }
 
 // portfolio
 export function* portfolioGettingSaga(){
@@ -458,51 +593,49 @@ export function* portfolioUpdatingSaga() {
                 }))
             }
 
-            if (portfoliosUpdating && portfoliosUpdating.length) {
-                const payload = portfoliosUpdating.map(item => {
-                    const {
-                        _id: id, 
-                        title, 
-                        link, 
-                        description, 
-                        images, 
-                        isNew, 
-                        type 
-                    } = item;
+            const payload = portfoliosUpdating.map(item => {
+                const {
+                    _id: id, 
+                    title, 
+                    link, 
+                    description, 
+                    images, 
+                    isNew, 
+                    type 
+                } = item;
 
-                    const imagesUpdated = 
-                        images
-                        .map(img => {
-                            const found = uploadResponse.find(it => it.elementId === img.id);
-                            return found ? found.id : img.id
-                        })
-                        .filter(img => img)
+                const imagesUpdated = 
+                    images
+                    .map(img => {
+                        const found = uploadResponse.find(it => it.elementId === img.id);
+                        return found ? found.id : img.id
+                    })
+                    .filter(img => img)
 
-                    return {
-                        id,
-                        isNew,
-                        title,
-                        type,
-                        link,
-                        description,
-                        images: imagesUpdated
-                    }
-                })
-        
-                
-                yield service.post(url + `/portfolio/update`, payload);
-            }
+                return {
+                    id,
+                    isNew,
+                    title,
+                    type,
+                    link,
+                    description,
+                    images: imagesUpdated
+                }
+            })
+    
+            
+            yield service.post(url + `/portfolio/update`, payload);
 
-            if (
-                deleting && deleting.length || 
-                uploading && uploading.length || 
-                portfoliosDeleting && portfoliosDeleting.length || 
-                portfoliosUpdating && portfoliosUpdating.length
-            ) 
-            {
+            // if (
+            //     deleting && deleting.length || 
+            //     uploading && uploading.length || 
+            //     portfoliosDeleting && portfoliosDeleting.length || 
+            //     portfoliosUpdating && portfoliosUpdating.length
+            // ) 
+            // {
                 const mutation = mutations.getPortfolio();
                 yield put(mutation);
-            }
+            // }
         } catch (e) {
             console.log(e);
         }
@@ -708,130 +841,89 @@ export function* socialUpdatingSaga() {
     }
 }
 
-// work-history
-export function* workHistoryGettingSaga(){
-    while (true){
-        yield take(mutations.GET_WORK_HISTORY);
 
-        try {
-            const response = yield service.get(url + `/work-history/get`);
+// export function* workHistoryUpdatingSaga() {
+//     while (true){
+//         try {
+//             const { id, date, title, image, description } = yield take (mutations.UPDATE_WORK_HISTORY);
 
-            const {_id: id, date, title, image, description} = response.length ? response[0] : {};
+//             yield service.post(url + `/work-history/update`, {
+//                 id,
+//                 date,
+//                 title,
+//                 image,
+//                 description
+//             });
 
-            const mutation = mutations.setWorkHistory(id, date, title, image, description);
+//             const mutation = mutations.setWorkHistory(id, date, title, image, description);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
-
-export function* workHistoryCreationSaga() {
-    while (true){
-        try {
-            const { date, title, image, description } = yield take (mutations.CREATE_WORK_HISTORY);
-
-            const response = yield service.post(url + `/work-history/create`, {
-                date,
-                title,
-                image,
-                description
-            });
-
-            const {_id: id} = response.length ? response[0] : {};
-
-            const mutation = mutations.setWorkHistory(id, date, title, image, description);
-
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
-
-export function* workHistoryUpdatingSaga() {
-    while (true){
-        try {
-            const { id, date, title, image, description } = yield take (mutations.UPDATE_WORK_HISTORY);
-
-            yield service.post(url + `/work-history/update`, {
-                id,
-                date,
-                title,
-                image,
-                description
-            });
-
-            const mutation = mutations.setWorkHistory(id, date, title, image, description);
-
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+//             yield put(mutation);
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     }
+// }
 
 
 // work-skill
-export function* workSkillGettingSaga(){
-    while (true){
-        yield take(mutations.GET_WORK_SKILL);
+// export function* workSkillGettingSaga(){
+//     while (true){
+//         yield take(mutations.GET_WORK_SKILL);
 
-        try {
-            const response = yield service.get(url + `/work-skill/get`);
+//         try {
+//             const response = yield service.get(url + `/work-skill/get`);
 
-            const {_id: id, title, percent} = response.length ? response[0] : {};
+//             const {_id: id, title, percent} = response.length ? response[0] : {};
 
-            const mutation = mutations.setWorkSkill(id, title, percent);
+//             const mutation = mutations.setWorkSkill(id, title, percent);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+//             yield put(mutation);
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     }
+// }
 
-export function* workSkillCreationSaga() {
-    while (true){
-        try {
-            const { title, percent } = yield take (mutations.CREATE_WORK_SKILL);
+// export function* workSkillCreationSaga() {
+//     while (true){
+//         try {
+//             const { title, percent } = yield take (mutations.CREATE_WORK_SKILL);
 
-            const response = yield service.post(url + `/work-skill/create`, {
-                title,
-                percent
-            });
+//             const response = yield service.post(url + `/work-skill/create`, {
+//                 title,
+//                 percent
+//             });
 
-            const {_id: id} = response.length ? response[0] : {};
+//             const {_id: id} = response.length ? response[0] : {};
 
-            const mutation = mutations.setWorkSkill(id, title, percent);
+//             const mutation = mutations.setWorkSkill(id, title, percent);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+//             yield put(mutation);
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     }
+// }
 
-export function* workSkillUpdatingSaga() {
-    while (true){
-        try {
-            const { id, title, percent } = yield take (mutations.UPDATE_WORK_SKILL);
+// export function* workSkillUpdatingSaga() {
+//     while (true){
+//         try {
+//             const { id, title, percent } = yield take (mutations.UPDATE_WORK_SKILL);
 
-            yield service.post(url + `/work-skill/update`, {
-                id,
-                title,
-                percent
-            });
+//             yield service.post(url + `/work-skill/update`, {
+//                 id,
+//                 title,
+//                 percent
+//             });
 
-            const mutation = mutations.setWorkSkill(id, title, percent);
+//             const mutation = mutations.setWorkSkill(id, title, percent);
 
-            yield put(mutation);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
+//             yield put(mutation);
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     }
+// }
 
 
 // setting

@@ -2,19 +2,21 @@ import { combineReducers } from 'redux';
 import * as mutations from './mutations'
 
 let defaultState = {
-    session: {},
     users: [],
-    achievement: {},
-    education: [],
+    social: {},
+    session: {},
     jobRole: {},
-    langSkill: [],
-    portfolio: [],
-    profile: {},
     service: {},
     setting: {},
-    social: {},
-    workHistory: [],
-    workSkill: [],
+    profile: {},
+    portfolio: [],
+    achievement: {},
+    resume: {
+        education: [],
+        langSkill: [],
+        workSkill: [],
+        workHistory: []
+    }
 };
 
 export const reducer = combineReducers({
@@ -56,14 +58,6 @@ export const reducer = combineReducers({
         }
         return achievement;
     },
-    education:(education = defaultState.education,action)=>{
-        switch (action.type) {
-            case mutations.SET_EDUCATION:
-                const { id, title, date, image, description } = action
-                return { id, title, date, image, description };
-        }
-        return education;
-    },
     jobRole:(jobRole = defaultState.jobRole,action)=>{
         switch (action.type) {
             case mutations.SET_JOB_ROLE:
@@ -71,14 +65,6 @@ export const reducer = combineReducers({
                 return { id, title };
         }
         return jobRole;
-    },
-    langSkill:(langSkill = defaultState.langSkill,action)=>{
-        switch (action.type) {
-            case mutations.SET_LANG_SKILL:
-                const { id, title, point } = action
-                return { id, title, point };
-        }
-        return langSkill;
     },
     portfolio:(portfolio = defaultState.portfolio,action)=>{
         switch (action.type) {
@@ -175,20 +161,60 @@ export const reducer = combineReducers({
         }
         return social;
     },
-    workHistory:(workHistory = defaultState.workHistory,action)=>{
+    // workHistory:(workHistory = defaultState.workHistory,action)=>{
+    //     switch (action.type) {
+    //         case mutations.SET_WORK_HISTORY:
+    //             // const { id, date, title, image, description } = action
+    //             // return { id, date, title, image, description };
+    //             return [...action.workHistory]
+    //     }
+    //     return workHistory;
+    // },
+    // workSkill:(workSkill = defaultState.workSkill,action)=>{
+    //     switch (action.type) {
+    //         case mutations.SET_WORK_SKILL:
+    //             // const { id, title, percent } = action
+    //             // return { id, title, percent };
+    //             return [...action.workSkill]
+    //     }
+    //     return workSkill;
+    // },
+    // education:(education = defaultState.education,action)=>{
+    //     switch (action.type) {
+    //         case mutations.SET_EDUCATION:
+    //             // const { id, title, date, image, description } = action
+    //             // return { id, title, date, image, description };
+    //             return [...action.education]
+    //     }
+    //     return education;
+    // },
+    // langSkill:(langSkill = defaultState.langSkill,action)=>{
+    //     switch (action.type) {
+    //         case mutations.SET_LANG_SKILL:
+    //             // const { id, title, point } = action
+    //             // return { id, title, point };
+    //             return [...action.langSkill]
+    //     }
+    //     return langSkill;
+    // },
+
+    resume:(resume = defaultState.resume,action)=>{
         switch (action.type) {
-            case mutations.SET_WORK_HISTORY:
-                const { id, date, title, image, description } = action
-                return { id, date, title, image, description };
+            case mutations.SET_RESUME:
+                const { 
+                    education,
+                    langSkill,
+                    workSkill,
+                    workHistory 
+                } = action
+
+                return { 
+                    education,
+                    langSkill,
+                    workSkill,
+                    workHistory 
+                };
         }
-        return workHistory;
-    },
-    workSkill:(workSkill = defaultState.workSkill,action)=>{
-        switch (action.type) {
-            case mutations.SET_WORK_SKILL:
-                const { id, title, percent } = action
-                return { id, title, percent };
-        }
-        return workSkill;
+        return resume;
     },
 });

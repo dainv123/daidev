@@ -10,82 +10,67 @@ function Resume({
     getSetting,
     createSetting,
     updateSetting,
-    education,
-    getEducation,
-    createEducation,
-    updateEducation,
-    workHistory,
-    getWorkHistory,
-    createWorkHistory,
-    updateWorkHistory,
-    workSkill,
-    getWorkSkill,
-    createWorkSkill,
-    updateWorkSkill,
-    langSkill,
-    getLangSkill,
-    createLangSkill,
-    updateLangSkill,
+    resume,
+    getResume,
+    updateResume
 }) {
+    let updatingResume = new Object();
+
     const [settingState, setSettingState] = useState(setting);
 
-    const [educationState, setEducationState] = useState(education);
+    const [educationState, setEducationState] = useState([]);
 
-    const [workHistoryState, setWorkHistoryState] = useState(workHistory);
+    const [workHistoryState, setWorkHistoryState] = useState([]);
 
-    const [workSkillState, setWorkSkillState] = useState(workSkill);
+    const [workSkillState, setWorkSkillState] = useState([]);
 
-    const [langSkillState, setLangSkillState] = useState(langSkill);
+    const [langSkillState, setLangSkillState] = useState([]);
 
     useEffect(() => {
+        getResume();
         getSetting();
-        getEducation();
-        getWorkHistory();
-        getWorkSkill();
-        getLangSkill();
     }, []);
 
     useEffect(() => {
+        const {
+            education, 
+            langSkill,
+            workSkill, 
+            workHistory, 
+        } = resume;
+
         setSettingState(setting);
         setEducationState(education);
-        setWorkHistoryState(workHistory);
         setWorkSkillState(workSkill);
         setLangSkillState(langSkill);
-    }, [setting, education, workHistory, workSkill, langSkill]);
+        setWorkHistoryState(workHistory);
+    }, [setting, resume]);
 
     const showSnackbar = () => {
         //
     };
 
     const hideSnackbar = () => {
-        //
+        updatingResume = new Object();
     };
 
     const submitSnackbar = () => {
-        // const settingCaller = settingState.id ? updateSetting(settingState) : createSetting(settingState);
+        const settingCaller = settingState.id ? updateSetting(settingState) : createSetting(settingState);
 
-        // const serviceCaller = serviceState.id ? updateService(serviceState) : createService(serviceState);
-
-        // const achievementCaller = achievementState.id ? updateAchievement(achievementState) : createAchievement(achievementState);
-
-        // Promise.all([settingCaller, serviceCaller, achievementCaller])
-        //     .then((response) => {
-        //         console.log('Both mutations were successful!', response);
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //     });
+        const resumeCaller = updateResume(updatingResume);
+        
+        Promise.all([settingCaller, resumeCaller])
+            .then((response) => {
+                console.log('Both mutations were successful!', response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
-    const updateValue = (type, property, value) => {
-        // if (type === 'achievement') {
-        //     setAchievementState({ ...achievementState, [property]: value });
-        // } else if (type === 'service') {
-        //     setServiceState({ ...serviceState, [property]: value });
-        // } else {
-        //     setSettingState({ ...settingState, [property]: value });
-        // }
-    };
+    const onChangeResume = value => updatingResume = value;
+
+    const updateValue = (type, property, value) => setSettingState({ ...settingState, [property]: value });
 
     return (
         <LayoutAdmin>
@@ -101,6 +86,7 @@ function Resume({
                 workSkill={workSkillState}
                 langSkill={langSkillState}
                 updateValue={updateValue}
+                onChangeResume={onChangeResume}
             ></SectionResume>
         </LayoutAdmin>
     );
@@ -108,16 +94,10 @@ function Resume({
 
 const mapStateToProps = ({
     setting,
-    workHistory,
-    education,
-    workSkill,
-    langSkill,
+    resume
 }) => ({
     setting,
-    workHistory,
-    education,
-    workSkill,
-    langSkill,
+    resume
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -133,53 +113,13 @@ const mapDispatchToProps = dispatch => ({
         dispatch(mutations.updateSetting(payload));
     },
 
-    getWorkHistory() {
-        dispatch(mutations.getWorkHistory());
+    getResume() {
+        dispatch(mutations.getResume());
     },
 
-    createWorkHistory(payload) {
-        dispatch(mutations.createWorkHistory(payload));
-    },
-
-    updateWorkHistory(payload) {
-        dispatch(mutations.updateWorkHistory(payload));
-    },
-
-    getEducation() {
-        dispatch(mutations.getEducation());
-    },
-
-    createEducation(payload) {
-        dispatch(mutations.createEducation(payload));
-    },
-
-    updateEducation(payload) {
-        dispatch(mutations.updateEducation(payload));
-    },
-
-    getWorkSkill() {
-        dispatch(mutations.getWorkSkill());
-    },
-
-    createWorkSkill(payload) {
-        dispatch(mutations.createWorkSkill(payload));
-    },
-
-    updateWorkSkill(payload) {
-        dispatch(mutations.updateWorkSkill(payload));
-    },
-
-    getLangSkill() {
-        dispatch(mutations.getLangSkill());
-    },
-
-    createLangSkill(payload) {
-        dispatch(mutations.createLangSkill(payload));
-    },
-
-    updateLangSkill(payload) {
-        dispatch(mutations.updateLangSkill(payload));
-    },
+    updateResume(payload) {
+        dispatch(mutations.updateResume(payload));
+    }
 })
 
 export const ConnectedResume = connect(mapStateToProps, mapDispatchToProps)(Resume);

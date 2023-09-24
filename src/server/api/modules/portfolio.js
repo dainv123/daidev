@@ -16,30 +16,6 @@ router.get('/get', async (req, res) => {
     }
 })
 
-// router.post('/create', async (req, res) => {
-//     const portfolios = req.body
-    
-//     try {
-//         for (const portfolio of portfolios) {
-//             const { title, link, description, images } = portfolio
-            
-//             const newPortfolio = new PortfolioModel({
-//                 user: req.user.id,
-//                 title,
-//                 link,
-//                 images,
-//                 description
-//             })
-    
-//             await newPortfolio.save()
-//         }
-
-//         res.status(200).json()
-//     } catch (error) {
-//         res.status(500).json({ error: MESSAGES.FAILED_CREATE_PORTFOLIO })
-//     }
-// })
-
 router.post('/update', async (req, res) => {
     const portfolios = req.body
     

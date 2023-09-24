@@ -143,43 +143,6 @@ export const setAchievement = (id, icon, title, description)=>({
     description
 });
 
-// education
-export const SET_EDUCATION = `SET_EDUCATION`;
-export const GET_EDUCATION = `GET_EDUCATION`;
-export const CREATE_EDUCATION = `CREATE_EDUCATION`;
-export const UPDATE_EDUCATION = `UPDATE_EDUCATION`;
-
-export const getEducation = ()=>({
-    type: GET_EDUCATION
-});
-
-export const createEducation = ({title, date, image, description})=>({
-    type: CREATE_EDUCATION,
-    date,
-    title,
-    image,
-    description
-});
-
-export const updateEducation = ({id, title, date, image, description})=>({
-    type: UPDATE_EDUCATION,
-    id,
-    date,
-    title,
-    image,
-    description
-});
-
-export const setEducation = (id, title, date, image, description)=>({
-    type: SET_EDUCATION,
-    id,
-    date,
-    title,
-    image,
-    description
-});
-
-
 // job-role
 export const SET_JOB_ROLE = `SET_JOB_ROLE`;
 export const GET_JOB_ROLE = `GET_JOB_ROLE`;
@@ -207,35 +170,6 @@ export const setJobRole = (id, title)=>({
     title
 });
 
-// lang-skill
-export const SET_LANG_SKILL = `SET_LANG_SKILL`;
-export const GET_LANG_SKILL = `GET_LANG_SKILL`;
-export const CREATE_LANG_SKILL = `CREATE_LANG_SKILL`;
-export const UPDATE_LANG_SKILL = `UPDATE_LANG_SKILL`;
-
-export const getLangSkill = ()=>({
-    type: GET_LANG_SKILL
-});
-
-export const createLangSkill = ({title, point})=>({
-    type: CREATE_LANG_SKILL,
-    title,
-    point
-});
-
-export const updateLangSkill = ({id, title, point})=>({
-    type: UPDATE_LANG_SKILL,
-    id,
-    title,
-    point
-});
-
-export const setLangSkill = (id, title, point)=>({
-    type: SET_LANG_SKILL,
-    id,
-    title,
-    point
-});
 
 // portfolio
 export const SET_PORTFOLIO = `SET_PORTFOLIO`;
@@ -245,11 +179,6 @@ export const UPDATE_PORTFOLIO = `UPDATE_PORTFOLIO`;
 export const getPortfolio = ()=>({
     type: GET_PORTFOLIO
 });
-
-export const mapPortfolioFile = ()=>({
-    type: MAP_PORTFOLIO_FILE
-});
-
 
 export const updatePortfolio = ({uploading, deleting, portfoliosUpdating, portfoliosDeleting})=>({
     type: UPDATE_PORTFOLIO,
@@ -566,69 +495,143 @@ export const setSocial = (id, icon, title, link)=>({
 });
 
 
-// work-history
-export const SET_WORK_HISTORY = `SET_WORK_HISTORY`;
-export const GET_WORK_HISTORY = `GET_WORK_HISTORY`;
-export const CREATE_WORK_HISTORY = `CREATE_WORK_HISTORY`;
-export const UPDATE_WORK_HISTORY = `UPDATE_WORK_HISTORY`;
+// // work-history
+// export const SET_WORK_HISTORY = `SET_WORK_HISTORY`;
+// export const GET_WORK_HISTORY = `GET_WORK_HISTORY`;
+// // export const CREATE_WORK_HISTORY = `CREATE_WORK_HISTORY`;
+// export const UPDATE_WORK_HISTORY = `UPDATE_WORK_HISTORY`;
 
-export const getWorkHistory = ()=>({
-    type: GET_WORK_HISTORY
+// export const getWorkHistory = ()=>({
+//     type: GET_WORK_HISTORY
+// });
+
+// export const updateWorkHistory = ({uploading, deleting, workHistoryUpdating, workHistoryDeleting})=>({
+//     type: UPDATE_WORK_HISTORY,
+//     uploading,
+//     deleting,
+//     workHistoryUpdating,
+//     workHistoryDeleting
+// });
+
+// export const setWorkHistory = (workHistory)=>({
+//     type: SET_WORK_HISTORY,
+//     workHistory
+// });
+
+
+// // work-skill
+// export const SET_WORK_SKILL = `SET_WORK_SKILL`;
+// export const GET_WORK_SKILL = `GET_WORK_SKILL`;
+// // export const CREATE_WORK_SKILL = `CREATE_WORK_SKILL`;
+// export const UPDATE_WORK_SKILL = `UPDATE_WORK_SKILL`;
+
+// export const getWorkSkill = ()=>({
+//     type: GET_WORK_SKILL
+// });
+
+// export const updateWorkSkill = ({uploading, deleting, workSkillUpdating, workSkillDeleting})=>({
+//     type: UPDATE_WORK_SKILL,
+//     uploading,
+//     deleting,
+//     workSkillUpdating,
+//     workSkillDeleting
+// });
+
+// export const setWorkSkill = (workSkill)=>({
+//     type: SET_WORK_SKILL,
+//     workSkill
+// });
+
+// // lang-skill
+// export const SET_LANG_SKILL = `SET_LANG_SKILL`;
+// export const GET_LANG_SKILL = `GET_LANG_SKILL`;
+// // export const CREATE_LANG_SKILL = `CREATE_LANG_SKILL`;
+// export const UPDATE_LANG_SKILL = `UPDATE_LANG_SKILL`;
+
+// export const getLangSkill = ()=>({
+//     type: GET_LANG_SKILL
+// });
+
+// export const updateLangSkill = ({uploading, deleting, langSkillUpdating, langSkillDeleting})=>({
+//     type: UPDATE_LANG_SKILL,
+//     uploading,
+//     deleting,
+//     langSkillUpdating,
+//     langSkillDeleting
+// });
+
+// export const setLangSkill = (langSkill)=>({
+//     type: SET_LANG_SKILL,
+//     langSkill
+// });
+
+
+// // education
+// export const SET_EDUCATION = `SET_EDUCATION`;
+// export const GET_EDUCATION = `GET_EDUCATION`;
+// export const UPDATE_EDUCATION = `UPDATE_EDUCATION`;
+
+// export const getEducation = ()=>({
+//     type: GET_EDUCATION
+// });
+
+// export const updateEducation = ({uploading, deleting, educationUpdating, educationDeleting})=>({
+//     type: UPDATE_EDUCATION,
+//     uploading,
+//     deleting,
+//     educationUpdating,
+//     educationDeleting
+// });
+
+// export const setEducation = (education)=>({
+//     type: SET_EDUCATION,
+//     education
+// });
+
+
+// resume
+export const SET_RESUME = `SET_RESUME`;
+export const GET_RESUME = `GET_RESUME`;
+export const UPDATE_RESUME = `UPDATE_RESUME`;
+
+export const getResume = ()=>({
+    type: GET_RESUME
 });
 
-export const createWorkHistory = ({date, title, image, description})=>({
-    type: CREATE_WORK_HISTORY,
-    date,
-    title,
-    image,
-    description
+export const updateResume = ({
+    uploading, 
+    deleting, 
+    educationUpdating, 
+    educationDeleting,
+    workHistoryUpdating, 
+    workHistoryDeleting,
+    langSkillUpdating, 
+    langSkillDeleting,
+    workSkillUpdating, 
+    workSkillDeleting
+})=>({
+    type: UPDATE_RESUME,
+    uploading,
+    deleting,
+    educationUpdating, 
+    educationDeleting,
+    workHistoryUpdating, 
+    workHistoryDeleting,
+    langSkillUpdating, 
+    langSkillDeleting,
+    workSkillUpdating, 
+    workSkillDeleting
 });
 
-export const updateWorkHistory = ({id, date, title, image, description})=>({
-    type: UPDATE_WORK_HISTORY,
-    id,
-    date,
-    title,
-    image,
-    description
-});
-
-export const setWorkHistory = (id, date, title, image, description)=>({
-    type: SET_WORK_HISTORY,
-    id,
-    date,
-    title,
-    image,
-    description
-});
-
-
-// work-skill
-export const SET_WORK_SKILL = `SET_WORK_SKILL`;
-export const GET_WORK_SKILL = `GET_WORK_SKILL`;
-export const CREATE_WORK_SKILL = `CREATE_WORK_SKILL`;
-export const UPDATE_WORK_SKILL = `UPDATE_WORK_SKILL`;
-
-export const getWorkSkill = ()=>({
-    type: GET_WORK_SKILL
-});
-
-export const createWorkSkill = ({title, percent})=>({
-    type: CREATE_WORK_SKILL,
-    title,
-    percent
-});
-
-export const updateWorkSkill = ({id, title, percent})=>({
-    type: UPDATE_WORK_SKILL,
-    id,
-    title,
-    percent
-});
-
-export const setWorkSkill = (id, title, percent)=>({
-    type: SET_WORK_SKILL,
-    id,
-    title,
-    percent
+export const setResume = ({
+    education,
+    langSkill,
+    workSkill,
+    workHistory
+})=>({
+    type: SET_RESUME,
+    education,
+    langSkill,
+    workSkill,
+    workHistory
 });

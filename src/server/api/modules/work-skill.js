@@ -1,82 +1,68 @@
 import { MESSAGES } from '../../constants';
+
 import { WorkSkillModel } from '../models/work-skill';
 
-const express = require('express');
+const ObjectId = require('mongodb').ObjectID
 
-const router = express.Router();
+const express = require('express')
+
+const router = express.Router()
 
 router.get('/get', async (req, res) => {
     try {
-        const workSkills = await WorkSkillModel.find({
-            user: req.user.id
-        });
-
-        res.status(200).json(workSkills);
+        res.status(200).json(await WorkSkillModel.find({ user: req.user.id }))
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_GET_WORK_SKILL });
+        res.status(500).json({ error: MESSAGES.FAILED_GET_WORK_SKILL })
     }
-});
-
-router.post('/create', async (req, res) => {
-    const { 
-		title,
-        date,
-        description,
-        image,
-	} = req.body;
-
-    try {
-        const workSkill = new WorkSkillModel({
-            user: req.user.id,
-            title,
-			date,
-			description,
-			image,
-        });
-
-        const saved = await workSkill.save();
-
-        res.status(200).json(saved);
-    } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_CREATE_WORK_SKILL });
-    }
-});
+})
 
 router.post('/update', async (req, res) => {
-    const {
-        id,
-        title,
-		date,
-		description,
-		image,
-    } = req.body;
-
+    const workSkills = req.body
+    
     try {
-        const workSkill = await WorkSkillModel.findById(id);
+        for (const workSkill of workSkills) {
+            const { id, title, percent, isNew } = workSkill
 
-        if (title !== undefined) {
-            workSkill.title = title;
+            const updatedPortfolio = isNew 
+                ?  
+                new WorkSkillModel({
+                    user: req.user.id,
+                    title,
+                    percent
+                })
+                : 
+                await WorkSkillModel.findByIdAndUpdate(
+                    id,
+                    {
+                        user: req.user.id,
+                        title,
+                        percent
+                    },
+                    {
+                        new: true
+                    }
+                )
+
+            await updatedPortfolio.save()
         }
 
-		if (date !== undefined) {
-            workSkill.date = date;
-        }
-
-		if (description !== undefined) {
-            workSkill.description = description;
-        }
-
-		if (image !== undefined) {
-            workSkill.image = image;
-        }
-
-        const saved = await workSkill.save();
-
-        res.status(200).json(saved);
+        res.status(200).json()
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_WORK_SKILL });
+        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_WORK_SKILL })
     }
-});
+})
+
+router.post('/delete', async (req, res) => {
+    const ids = req.body.ids || []
+    
+    try {
+        await WorkSkillModel.deleteMany({ _id: { $in: ids.map(id => new ObjectId(id)) }})
+
+        res.status(200).json()
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_WORK_SKILL })
+    }
+})
 
 export const WorkSkillRoute = ({ app, authJWT }) => {
     app.use('/work-skill', authJWT, router);

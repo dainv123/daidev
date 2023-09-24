@@ -1,5 +1,8 @@
 import { MESSAGES } from '../../constants';
+
 import { EducationModel } from '../models/education';
+
+const ObjectId = require('mongodb').ObjectID
 
 const express = require('express');
 
@@ -17,67 +20,63 @@ router.get('/get', async (req, res) => {
     }
 });
 
-router.post('/create', async (req, res) => {
-    const {
-        title,
-        date,
-        image,
-        description
-    } = req.body;
-
-    try {
-        const education = new EducationModel({
-            user: req.user.id,
-            title,
-            date,
-            image,
-            description
-        });
-
-        const saved = await education.save();
-
-        res.status(200).json(saved);
-    } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_CREATE_EDUCATION });
-    }
-});
 
 router.post('/update', async (req, res) => {
-    const {
-        id,
-        title,
-        date,
-        image,
-        description
-    } = req.body;
-
+    const educations = req.body
+    
     try {
-        const education = await EducationModel.findById(id);
+        for (const education of educations) {
+            const { id, title, date, description, image, isNew } = education
 
-        if (date !== undefined) {
-            education.date = date;
+            const updatedEducation = isNew 
+                ?  
+                new EducationModel({
+                    user: req.user.id,
+                    title,
+                    date,
+                    image,
+                    description
+                })
+                : 
+                await EducationModel.findByIdAndUpdate(
+                    id,
+                    {
+                        user: req.user.id,
+                        title,
+                        date,
+                        image,
+                        description
+                    },
+                    {
+                        new: true
+                    }
+                )
+
+            await updatedEducation.save()
         }
 
-        if (title !== undefined) {
-            education.title = title;
-        }
-
-        if (image !== undefined) {
-            education.image = image;
-        }
-
-        if (description !== undefined) {
-            education.description = description;
-        }
-
-        const saved = await education.save();
-
-        res.status(200).json(saved);
+        res.status(200).json()
     } catch (error) {
-        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_EDUCATION });
+        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_PORTFOLIO })
     }
 });
 
+router.post('/delete', async (req, res) => {
+    const ids = req.body.ids || []
+    
+    try {
+        await EducationModel.deleteMany({ 
+            _id: { 
+                $in: ids.map(id => new ObjectId(id)) 
+            }
+        })
+
+        res.status(200).json()
+    } catch (error) {
+        res.status(500).json({ error: MESSAGES.FAILED_UPDATE_EDUCATION })
+    }
+})
+    
 export const EducationRoute = ({ app, authJWT }) => {
     app.use('/education', authJWT, router);
 }
