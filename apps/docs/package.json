@@ -5,7 +5,9 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "PORT=4002, docusaurus start",
-    "build": "docusaurus build",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" docusaurus build",
+    "build:light": "NODE_OPTIONS=\"--max-old-space-size=2048\" docusaurus build --out-dir build-light",
+    "build:minimal": "NODE_OPTIONS=\"--max-old-space-size=1024\" docusaurus build --out-dir build-minimal --minify",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

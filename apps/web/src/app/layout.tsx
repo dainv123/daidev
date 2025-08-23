@@ -50,10 +50,7 @@ export default function RootLayout({
         {/* <LanguageSwitcher /> */}
         {/* Google Maps */}
         <Script
-          src={`https://maps.google.com/maps/api/js?key=${
-            process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-            "AIzaSyDe7yLyrlvLfv_yN4g6BMj9lwh5FWrFqOo"
-          }&language=en`}
+          src={`https://maps.google.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&language=en`}
           strategy="afterInteractive"
         />
 

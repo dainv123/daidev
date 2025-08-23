@@ -22,10 +22,6 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Project Overview',
-      link: {
-        type: 'doc',
-        id: 'overview/index',
-      },
       items: [
         'overview/project-architecture-overview',
         'overview/monorepo-structure-guide',
@@ -34,10 +30,6 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'System Design',
-      link: {
-        type: 'doc',
-        id: 'design/index',
-      },
       items: [
         'design/admin-dashboard-ui-design',
         'design/frontend-web-app-design',
@@ -47,10 +39,6 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Implementation Guide',
-      link: {
-        type: 'doc',
-        id: 'implementation/index',
-      },
       items: [
         'implementation/auth-implementation-roadmap',
         'implementation/completed-features-summary',
@@ -62,10 +50,6 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'System Integration',
-      link: {
-        type: 'doc',
-        id: 'integrations/index',
-      },
       items: [
         'integrations/jwt-auth-authorization-guide',
         'integrations/resend-email-workflow',
@@ -104,10 +88,6 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Troubleshooting',
-      link: {
-        type: 'doc',
-        id: 'troubleshooting/index',
-      },
       items: [
         'troubleshooting/known-issues-status',
         'troubleshooting/admin-import-functionality-fix',
@@ -118,22 +98,10 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Workflows',
-      link: {
-        type: 'doc',
-        id: 'workflows/index',
-      },
       items: [
+        'workflows/index',
       ],
     },
-    // {
-    //   type: 'category',
-    //   label: 'Testing',
-    //   items: [
-    //     'test-mermaid',
-    //     'mermaid-working-test',
-    //     'mermaid-basic-test',
-    //   ],
-    // },
   ],
 };
 

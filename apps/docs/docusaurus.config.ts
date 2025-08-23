@@ -36,6 +36,11 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // Optimize build performance
+  staticDirectories: ['static'],
+  trailingSlash: false,
+  noIndex: false,
+
   presets: [
     [
       'classic',
@@ -46,6 +51,15 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          // Optimize docs build
+          routeBasePath: 'docs',
+          include: ['**/*.{md,mdx}'],
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+          ],
         },
         blog: {
           showReadingTime: true,
@@ -73,6 +87,9 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    // Optimize markdown processing
+    parseFrontMatter: true,
+    format: 'detect',
   },
 
   themeConfig: {

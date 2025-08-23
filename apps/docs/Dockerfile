@@ -14,9 +14,9 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build real application
+# Build with optimized memory settings
 RUN echo "Building Docusaurus Documentation..." && \
-  npm run build
+  NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Production stage
 FROM nginx:alpine

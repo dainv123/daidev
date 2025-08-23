@@ -619,3 +619,144 @@ openssl x509 -in /opt/daidev/deployment/ssl/daidev.com.crt -text -noout
 ---
 
 **Lưu ý**: Thay thế tất cả placeholder values (API keys, passwords, domain names) bằng giá trị thực tế trước khi deploy. 
+
+
+[UPDATED]:
+
+Tôi thấy file `nginx-subdomain.conf` đang cấu hình để redirect tất cả traffic từ HTTP sang HTTPS, nhưng SSL certificates chưa được tạo. Hãy sửa như sau:
+
+## �� **Sửa Nginx Config Để Chạy HTTP Trước**
+
+### **Bước 1: Tạo config Nginx tạm thời (chỉ HTTP)**
+```bash
+# Backup config cũ
+cp /etc/nginx/sites-available/daidev /etc/nginx/sites-available/daidev.backup
+
+# Tạo config mới chỉ dùng HTTP
+cat > /etc/nginx/sites-available/daidev << 'EOF'
+# Main Website
+server {
+    listen 80;
+    server_name daidev.click www.daidev.click;
+
+    # Web Frontend
+    location / {
+        proxy_pass http://localhost:3003/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+# API Subdomain
+server {
+    listen 80;
+    server_name api.daidev.click;
+
+    # API Backend
+    location / {
+        proxy_pass http://localhost:3001/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+    }
+}
+
+# Admin Subdomain
+server {
+    listen 80;
+    server_name admin.daidev.click;
+
+    # Admin Dashboard
+    location / {
+        proxy_pass http://localhost:3002/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+# Docs Subdomain
+server {
+    listen 80;
+    server_name docs.daidev.click;
+
+    # Documentation
+    location / {
+        proxy_pass http://localhost:4002/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# Theme Detail Subdomain
+server {
+    listen 80;
+    server_name theme.daidev.click;
+
+    # Theme Detail App
+    location / {
+        proxy_pass http://localhost:3004/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+# Swagger Subdomain
+server {
+    listen 80;
+    server_name swagger.daidev.click;
+
+    # Swagger API Docs
+    location / {
+        proxy_pass http://localhost:4001/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+EOF
+```
+
+### **Bước 2: Test và reload Nginx**
+```bash
+nginx -t
+systemctl reload nginx
+```
+
+### **Bước 3: Kiểm tra trạng thái**
+```bash
+systemctl status nginx
+```
+
+Bây giờ Nginx sẽ chạy trên HTTP (port 80) cho tất cả subdomains. Sau khi deploy app thành công, chúng ta sẽ setup SSL certificates để redirect sang HTTPS!
