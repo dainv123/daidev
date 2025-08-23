@@ -4,7 +4,8 @@ import {
   ApiResponse, PaginatedResponse 
 } from '../types/api';
 
-const API_BASE_URL = 'http://localhost:3001/api/v1';
+// Use environment variable or fallback to relative path for production
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Create axios instance
 const api = axios.create({
