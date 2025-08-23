@@ -58,7 +58,7 @@ services:
     networks:
       - daidev-network
     ports:
-      - "127.0.0.1:3001:3001"
+      - "3001:3001"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/v1/health"]
       interval: 30s
@@ -81,7 +81,7 @@ services:
     networks:
       - daidev-network
     ports:
-      - "127.0.0.1:3002:3002"
+      - "3002:3002"
     depends_on:
       - api
 
@@ -101,7 +101,7 @@ services:
     networks:
       - daidev-network
     ports:
-      - "127.0.0.1:3003:3000"
+      - "3003:3000"
     depends_on:
       - api
 
@@ -121,7 +121,7 @@ services:
     networks:
       - daidev-network
     ports:
-      - "127.0.0.1:3004:3004"
+      - "3004:3004"
     depends_on:
       - api
 
@@ -135,7 +135,7 @@ services:
     networks:
       - daidev-network
     ports:
-      - "127.0.0.1:4002:4002"
+      - "4002:4002"
 
   # Swagger Proxy
   swagger-proxy:
@@ -151,7 +151,7 @@ services:
     networks:
       - daidev-network
     ports:
-      - "127.0.0.1:4001:4001"
+      - "4001:4001"
 
   # Database Seeder (run once)
   seeder:
