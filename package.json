@@ -1,0 +1,37 @@
+{
+  "name": "daidev",
+  "version": "1.0.0",
+  "description": "Multi-tenant portfolio platform with Next.js, Nuxt.js, React Admin, and Nest.js",
+  "private": true,
+  "packageManager": "pnpm@8.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "install:all": "pnpm install",
+    "dev:web": "pnpm --filter daidev-web dev",
+    "dev:admin": "pnpm --filter @daidev/admin dev",
+    "dev:api": "pnpm --filter @daidev/api start:dev",
+    "dev:theme": "pnpm --filter @daidev/theme-detail dev"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "prettier": "^3.0.0",
+    "turbo": "^1.10.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "swagger-ui-dist": "^5.27.1"
+  }
+}

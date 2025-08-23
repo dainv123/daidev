@@ -1,0 +1,184 @@
+version: "3.9"
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: daidev-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-your-mongodb-password}
+      MONGO_INITDB_DATABASE: daidev
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - daidev-network
+    ports:
+      - "27017:27017"
+
+  # API Backend
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: daidev-api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://admin:${MONGODB_ROOT_PASSWORD:-your-mongodb-password}@mongodb:27017/daidev?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-here}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - GOOGLE_RECAPTCHA_SITE_KEY=${GOOGLE_RECAPTCHA_SITE_KEY}
+      - GOOGLE_RECAPTCHA_SECRET_KEY=${GOOGLE_RECAPTCHA_SECRET_KEY}
+      - FRONTEND_URLS=${FRONTEND_URLS:-http://localhost:3002,http://localhost:3003,http://localhost:3004}
+    depends_on:
+      - mongodb
+    networks:
+      - daidev-network
+    ports:
+      - "3001:3001"
+
+  # Admin Dashboard
+  admin:
+    build:
+      context: ./apps/admin
+      dockerfile: Dockerfile
+    container_name: daidev-admin
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3001/api/v1}
+      - VITE_APP_NAME=${VITE_APP_NAME:-Daidev Admin}
+      - VITE_APP_VERSION=${VITE_APP_VERSION:-1.0.0}
+    networks:
+      - daidev-network
+    ports:
+      - "3002:3002"
+
+  # Web Frontend
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: daidev-web
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3001/api/v1}
+      - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME:-Daidev Portfolio}
+      - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY=${GOOGLE_RECAPTCHA_SITE_KEY}
+    networks:
+      - daidev-network
+    ports:
+      - "3003:3000"
+
+  # Theme Detail
+  theme-detail:
+    build:
+      context: ./apps/theme-detail
+      dockerfile: Dockerfile
+    container_name: daidev-theme-detail
+    restart: unless-stopped
+    networks:
+      - daidev-network
+    ports:
+      - "3004:3004"
+
+  # Documentation
+  docs:
+    build:
+      context: ./apps/docs
+      dockerfile: Dockerfile
+    container_name: daidev-docs
+    restart: unless-stopped
+    networks:
+      - daidev-network
+    ports:
+      - "4002:4002"
+
+  # Swagger Proxy
+  swagger-proxy:
+    build:
+      context: ./apps/swagger-proxy
+      dockerfile: Dockerfile
+    container_name: daidev-swagger-proxy
+    restart: unless-stopped
+    environment:
+      - API_URL=http://api:3001
+    depends_on:
+      - api
+    networks:
+      - daidev-network
+    ports:
+      - "4001:4001"
+
+  # Database Seeder
+  seeder:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: daidev-seeder
+    restart: "no"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:${MONGODB_ROOT_PASSWORD:-your-mongodb-password}@mongodb:27017/daidev?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-here}
+    depends_on:
+      - mongodb
+      - api
+    networks:
+      - daidev-network
+    command: sh -c "sleep 15 && npm run seed"
+
+  # Force Database Seeder
+  # force-seeder:
+  #   build:
+  #     context: ./apps/api
+  #     dockerfile: Dockerfile
+  #   container_name: daidev-force-seeder
+  #   restart: "no"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - MONGODB_URI=mongodb://admin:${MONGODB_ROOT_PASSWORD:-your-mongodb-password}@mongodb:27017/daidev?authSource=admin
+  #     - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-here}
+  #   depends_on:
+  #     - mongodb
+  #     - api
+  #   networks:
+  #     - daidev-network
+  #   command: sh -c "sleep 15 && npm run seed"
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: daidev-nginx
+    restart: unless-stopped
+    volumes:
+      - ./deployment/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./deployment/nginx/conf.d:/etc/nginx/conf.d
+      - ./deployment/ssl:/etc/nginx/ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+      - admin
+      - web
+      - theme-detail
+      - docs
+      - swagger-proxy
+    networks:
+      - daidev-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  daidev-network:
+    driver: bridge 

@@ -1,0 +1,14 @@
+{
+  "name": "swagger-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "main": "swagger-proxy.js",
+  "scripts": {
+    "start": "node swagger-proxy.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "swagger-ui-dist": "^5.10.3",
+    "http-proxy-middleware": "^2.0.6"
+  }
+}

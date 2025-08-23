@@ -1,0 +1,177 @@
+version: "3.9"
+
+services:
+  # API Backend (không cần mongodb service)
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: daidev-api-prod
+    restart: unless-stopped
+    environment:
+      # Node Environment
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-3001}
+      
+      # Database - MongoDB Atlas
+      - MONGODB_URI=${MONGODB_URI}
+      
+      # JWT
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      
+      # Email Services
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      
+      # Cloud Storage
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - S3_BUCKET=${S3_BUCKET}
+      
+      # Google Services
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - GOOGLE_RECAPTCHA_SITE_KEY=${GOOGLE_RECAPTCHA_SITE_KEY}
+      - GOOGLE_RECAPTCHA_SECRET_KEY=${GOOGLE_RECAPTCHA_SECRET_KEY}
+      
+      # CORS & Security
+      - FRONTEND_URLS=${FRONTEND_URLS}
+      - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-900000}
+      - RATE_LIMIT_MAX_REQUESTS=${RATE_LIMIT_MAX_REQUESTS:-100}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SESSION_MAX_AGE=${SESSION_MAX_AGE:-86400000}
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ENABLE_LOGGING=${ENABLE_LOGGING:-true}
+    networks:
+      - daidev-network
+    ports:
+      - "127.0.0.1:3001:3001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Admin Dashboard
+  admin:
+    build:
+      context: ./apps/admin
+      dockerfile: Dockerfile
+    container_name: daidev-admin-prod
+    restart: unless-stopped
+    environment:
+      # Vite Environment Variables
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_APP_NAME=${VITE_APP_NAME:-Daidev Admin}
+      - VITE_APP_VERSION=${VITE_APP_VERSION:-1.0.0}
+    networks:
+      - daidev-network
+    ports:
+      - "127.0.0.1:3002:3002"
+    depends_on:
+      - api
+
+  # Web Frontend
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: daidev-web-prod
+    restart: unless-stopped
+    environment:
+      # Next.js Public Environment Variables
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME:-Daidev Portfolio}
+      - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY=${GOOGLE_RECAPTCHA_SITE_KEY}
+    networks:
+      - daidev-network
+    ports:
+      - "127.0.0.1:3003:3000"
+    depends_on:
+      - api
+
+  # Theme Detail
+  theme-detail:
+    build:
+      context: ./apps/theme-detail
+      dockerfile: Dockerfile
+    container_name: daidev-theme-detail-prod
+    restart: unless-stopped
+    environment:
+      # Nuxt.js Environment Variables
+      - NUXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NUXT_APP_NAME=${NEXT_PUBLIC_APP_NAME:-Daidev Theme Detail}
+      - NITRO_PORT=3004
+      - NITRO_HOST=0.0.0.0
+    networks:
+      - daidev-network
+    ports:
+      - "127.0.0.1:3004:3004"
+    depends_on:
+      - api
+
+  # Documentation
+  docs:
+    build:
+      context: ./apps/docs
+      dockerfile: Dockerfile
+    container_name: daidev-docs-prod
+    restart: unless-stopped
+    networks:
+      - daidev-network
+    ports:
+      - "127.0.0.1:4002:4002"
+
+  # Swagger Proxy
+  swagger-proxy:
+    build:
+      context: ./apps/swagger-proxy
+      dockerfile: Dockerfile
+    container_name: daidev-swagger-proxy-prod
+    restart: unless-stopped
+    environment:
+      - API_URL=http://api:3001
+    depends_on:
+      - api
+    networks:
+      - daidev-network
+    ports:
+      - "127.0.0.1:4001:4001"
+
+  # Database Seeder (run once)
+  seeder:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: daidev-seeder-prod
+    restart: "no"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - daidev-network
+    command: sh -c "sleep 30 && npm run seed"
+    profiles:
+      - seed
+
+networks:
+  daidev-network:
+    driver: bridge 

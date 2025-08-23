@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2020",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "types": ["jest", "node"],
+    "typeRoots": [],
+
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noImplicitAny": false,
+    "strict": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@/shared/*": ["src/shared/*"],
+      "@/auth/*": ["src/auth/*"],
+      "@/users/*": ["src/users/*"],
+      "@/themes/*": ["src/themes/*"],
+      "@/blogs/*": ["src/blogs/*"],
+      "@/certificates/*": ["src/certificates/*"],
+      "@/tags/*": ["src/tags/*"],
+      "@/images/*": ["src/images/*"],
+      "@/contact-messages/*": ["src/contact-messages/*"],
+      "@/site-settings/*": ["src/site-settings/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+} 
