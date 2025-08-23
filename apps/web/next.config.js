@@ -14,15 +14,21 @@ const nextConfig = {
     domains: ['res.cloudinary.com'],
     formats: ['image/webp', 'image/avif'],
   },
+  // Serve static files from public/assets
   async rewrites() {
     return [
       {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/:path*`,
       },
+      // Serve static assets
+      {
+        source: '/assets/:path*',
+        destination: '/public/assets/:path*',
+      },
     ];
   },
-  // Serve static files from public/assets
+  // Add headers for static files
   async headers() {
     return [
       {

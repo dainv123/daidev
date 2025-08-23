@@ -39,6 +39,9 @@ COPY --from=builder /app/public ./public
 # Set proper permissions for public files
 RUN chmod -R 755 ./public
 
+# Create symlink for assets to work with Next.js
+RUN ln -sf /app/public/assets /app/assets
+
 # Expose port
 EXPOSE 3000
 
