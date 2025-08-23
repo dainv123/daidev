@@ -88,7 +88,6 @@ const config: Config = {
   markdown: {
     mermaid: true,
     // Optimize markdown processing
-    parseFrontMatter: true,
     format: 'detect',
   },
 

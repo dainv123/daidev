@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install only production dependencies first
-RUN npm ci --only=production --no-audit --no-fund
+RUN npm install --only=production --no-audit --no-fund
 
 # Copy config files
 COPY docusaurus.config.ts ./
@@ -14,7 +14,7 @@ COPY sidebars.ts ./
 COPY tsconfig*.json ./
 
 # Install dev dependencies
-RUN npm ci --no-audit --no-fund
+RUN npm install --no-audit --no-fund
 
 # Copy source code
 COPY . .
