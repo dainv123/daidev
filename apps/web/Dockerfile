@@ -32,7 +32,10 @@ RUN npm install --only=production
 # Copy built application
 COPY --from=builder /app/.next/standalone .
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+
+# Create public directory and copy if it exists
+RUN mkdir -p ./public
+RUN sh -c 'if [ -d "/app/public" ]; then cp -r /app/public/* ./public/; fi' || true
 
 # Expose port
 EXPOSE 3000
