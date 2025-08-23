@@ -17,10 +17,11 @@ const nextConfig = {
   // Serve static files from public/assets
   async rewrites() {
     return [
-      {
+      // Only proxy /api if no external API URL is set
+      ...(process.env.NEXT_PUBLIC_API_URL ? [] : [{
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/:path*`,
-      },
+        destination: 'http://localhost:3001/api/v1/:path*',
+      }]),
       // Serve static assets
       {
         source: '/assets/:path*',

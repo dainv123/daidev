@@ -4,8 +4,8 @@ import {
   ApiResponse, PaginatedResponse 
 } from '../types/api';
 
-// Use environment variable or fallback to relative path for production
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+// Use environment variable or fallback to external API URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 // Create axios instance
 const api = axios.create({
