@@ -2,14 +2,19 @@ FROM node:18-alpine as builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
+
+# Install only production dependencies first
+RUN npm ci --only=production --no-audit --no-fund
+
+# Copy config files
 COPY docusaurus.config.ts ./
 COPY sidebars.ts ./
 COPY tsconfig*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dev dependencies
+RUN npm ci --no-audit --no-fund
 
 # Copy source code
 COPY . .
