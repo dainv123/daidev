@@ -45,7 +45,7 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # Copy next.config.js to production stage
-COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /app/next.config.js ./
 
 # Set proper permissions for public files
 RUN chmod -R 755 ./public
