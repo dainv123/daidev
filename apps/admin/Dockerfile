@@ -1,5 +1,10 @@
 FROM node:18-alpine as builder
 
+# Add build args for Vite environment variables
+ARG VITE_API_URL
+ARG VITE_APP_NAME
+ARG VITE_APP_VERSION
+
 WORKDIR /app
 
 # Copy package files
