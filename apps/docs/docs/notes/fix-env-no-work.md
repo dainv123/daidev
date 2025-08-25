@@ -51,3 +51,12 @@ docker-compose --env-file .env -f docker-compose.prod.atlas.yml up -d admin
 - **Build args** = truyền vào build time (cho Vite)
 - **Environment** = truyền vào runtime (cho container)
 - **Cần cả 2** để hoạt động đúng!
+
+
+# Build tất cả services với build args
+docker-compose --env-file .env -f docker-compose.prod.atlas.yml build --no-cache
+
+# Hoặc build từng service
+docker-compose --env-file .env -f docker-compose.prod.atlas.yml build --no-cache admin
+docker-compose --env-file .env -f docker-compose.prod.atlas.yml build --no-cache web  
+docker-compose --env-file .env -f docker-compose.prod.atlas.yml build --no-cache theme-detail
