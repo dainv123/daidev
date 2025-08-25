@@ -152,7 +152,7 @@ const ResumeSection: React.FC = () => {
                     <span>{t({ en: "My Certificates", vi: "Chứng chỉ" })}</span>
                     {t({ en: "Achievements", vi: "Thành tựu" })}
                   </h4>
-                  <a className="bt-submit" href="dummy-resume.txt">
+                  <a className="bt-submit" href="/assets/file/CV_NguyenVanDai.pdf">
                     <i className="fas fa-cloud-download-alt"></i>{" "}
                     {t({ en: "Download Resume", vi: "Tải CV" })}
                   </a>
