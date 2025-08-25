@@ -24,14 +24,14 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Template CSS Files */}
-        <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="/assets/css/animate.min.css" />
-        <link rel="stylesheet" href="/assets/css/owl.carousel.min.css" />
-        <link rel="stylesheet" href="/assets/css/lightcase.min.css" />
-        <link rel="stylesheet" href="/assets/css/fontawesome.min.css" />
-        <link rel="stylesheet" href="/assets/css/linearicons.min.css" />
-        <link rel="stylesheet" href="/assets/css/pe-icon-7-stroke.min.css" />
-        <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="stylesheet" href="/assets/web/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/assets/web/css/animate.min.css" />
+        <link rel="stylesheet" href="/assets/web/css/owl.carousel.min.css" />
+        <link rel="stylesheet" href="/assets/web/css/lightcase.min.css" />
+        <link rel="stylesheet" href="/assets/web/css/fontawesome.min.css" />
+        <link rel="stylesheet" href="/assets/web/css/linearicons.min.css" />
+        <link rel="stylesheet" href="/assets/web/css/pe-icon-7-stroke.min.css" />
+        <link rel="stylesheet" href="/assets/web/css/style.css" />
       </head>
       <body className={inter.className}>
         {/* Preloader */}
@@ -55,29 +55,29 @@ export default function RootLayout({
         />
 
         {/* Template JS Files */}
-        <Script src="/assets/js/jquery.min.js" strategy="beforeInteractive" />
-        <Script src="/assets/js/bootstrap.min.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/jquery.min.js" strategy="beforeInteractive" />
+        <Script src="/assets/web/js/bootstrap.min.js" strategy="afterInteractive" />
         <Script
-          src="/assets/js/owl.carousel.min.js"
+          src="/assets/web/js/owl.carousel.min.js"
           strategy="afterInteractive"
         />
-        <Script src="/assets/js/typed.min.js" strategy="afterInteractive" />
-        <Script src="/assets/js/lightcase.min.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/typed.min.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/lightcase.min.js" strategy="afterInteractive" />
         <Script
-          src="/assets/js/jquery.isotope.min.js"
+          src="/assets/web/js/jquery.isotope.min.js"
           strategy="afterInteractive"
         />
-        <Script src="/assets/js/wow.min.js" strategy="afterInteractive" />
-        <Script src="/assets/js/common.js" strategy="afterInteractive" />
-        <Script src="/assets/js/util.js" strategy="afterInteractive" />
-        <Script src="/assets/js/stats.js" strategy="afterInteractive" />
-        <Script src="/assets/js/onion.js" strategy="afterInteractive" />
-        <Script src="/assets/js/map.js" strategy="afterInteractive" />
-        <Script src="/assets/js/marker.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/wow.min.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/common.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/util.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/stats.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/onion.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/map.js" strategy="afterInteractive" />
+        <Script src="/assets/web/js/marker.js" strategy="afterInteractive" />
         
         {/* Load init.js last to ensure all dependencies are loaded */}
         <Script 
-          src="/assets/js/init.js" 
+          src="/assets/web/js/init.js" 
           strategy="afterInteractive"
         />
       </body>
