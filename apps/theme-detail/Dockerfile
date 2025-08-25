@@ -1,5 +1,9 @@
 FROM node:18-alpine as builder
 
+# Add build args for Nuxt.js environment variables
+ARG NUXT_PUBLIC_API_URL
+ARG NUXT_APP_NAME
+
 WORKDIR /app
 
 # Copy package files
@@ -15,6 +19,8 @@ COPY . .
 
 # Build Nuxt.js application
 RUN echo "Building real Nuxt.js Theme Detail..." && \
+  echo "NUXT_PUBLIC_API_URL: $NUXT_PUBLIC_API_URL" && \
+  echo "NUXT_APP_NAME: $NUXT_APP_NAME" && \
   npm run build
 
 # Production stage

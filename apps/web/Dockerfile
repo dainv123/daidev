@@ -1,5 +1,11 @@
 FROM node:18-alpine as builder
 
+# Add build args for Next.js environment variables
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_NAME
+ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+ARG NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY
+
 WORKDIR /app
 
 # Copy package files
@@ -15,6 +21,8 @@ COPY . .
 
 # Build real application 
 RUN echo "Building real Web Frontend..." && \
+  echo "NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL" && \
+  echo "NEXT_PUBLIC_APP_NAME: $NEXT_PUBLIC_APP_NAME" && \
   npm install axios && \
   npm run build
 
