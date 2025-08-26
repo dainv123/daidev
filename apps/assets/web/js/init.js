@@ -20,7 +20,7 @@
         
         // Load the main script
         var script = document.createElement('script');
-        script.src = '/assets/js/script.js';
+        script.src = '/assets/web/js/script.js';
         script.onload = function() {
             console.log('Script loaded successfully');
         };
