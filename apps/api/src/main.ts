@@ -28,9 +28,29 @@ async function bootstrap() {
     .map(origin => origin.trim())
     .filter(Boolean);
 
+  // Add all subdomains and main domain
+  const defaultOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3002',
+    'http://localhost:3003',
+    'http://localhost:3004',
+    'https://daidev.click',
+    'https://www.daidev.click',
+    'https://api.daidev.click',
+    'https://admin.daidev.click',
+    'https://docs.daidev.click',
+    'https://theme.daidev.click',
+    'https://swagger.daidev.click'
+  ];
+
+  const allOrigins = [...new Set([...allowedOrigins, ...defaultOrigins])];
+
   app.enableCors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : 'http://localhost:3000',
+    origin: allOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
   });
 
   app.useGlobalPipes(
