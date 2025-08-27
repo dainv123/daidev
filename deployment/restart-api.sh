@@ -25,9 +25,23 @@ if [ ! -f ".env" ]; then
     cp env.example .env
 fi
 
+# Check which package manager is available
+if command -v pnpm &> /dev/null; then
+    PACKAGE_MANAGER="pnpm"
+elif command -v yarn &> /dev/null; then
+    PACKAGE_MANAGER="yarn"
+elif command -v npm &> /dev/null; then
+    PACKAGE_MANAGER="npm"
+else
+    echo "❌ No package manager found (npm, yarn, or pnpm)"
+    exit 1
+fi
+
+echo "Using package manager: $PACKAGE_MANAGER"
+
 # Start API in background
 echo "🚀 Starting API with new CORS configuration..."
-pnpm run start:dev > /tmp/api.log 2>&1 &
+$PACKAGE_MANAGER run start:dev > /tmp/api.log 2>&1 &
 API_PID=$!
 
 echo "API started with PID: $API_PID"
