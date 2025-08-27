@@ -71,6 +71,7 @@ The documentation is organized into 6 main sections:
 ### 3. **03-implementation/** - Detailed implementation guides
 - [Admin Dashboard Forms Guide](/03-implementation/admin-dashboard-forms-guide) - Form implementation
 - [Auth Implementation Roadmap](/03-implementation/auth-implementation-roadmap) - Authentication setup
+- [Admin Login Flow Guide](/03-implementation/admin-login-flow-guide) - Complete login flow from admin to API
 - [Cloudinary Image System](/03-implementation/cloudinary-image-system) - Image management
 - [Multi-tenant Data Architecture](/03-implementation/multi-tenant-data-architecture) - Data isolation
 
