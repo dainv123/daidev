@@ -86,16 +86,27 @@ daidev/
 │   ├── theme-detail/         # Nuxt.js (Theme Detail Micro Frontend)
 │   ├── admin/                # React + Tailwind CSS (Admin Dashboard)
 │   ├── api/                  # Nest.js (Backend API)
+│   ├── docs/                 # Docusaurus Documentation Site
+│   ├── swagger-proxy/        # API Documentation Proxy
+│   └── assets/               # Static Assets (CV, templates, images)
 ├── packages/
 │   ├── shared/               # Shared utilities, types, DTOs
 │   │   ├── lib/
 │   │   │   ├── api-client.ts # Shared API client
 │   │   │   ├── types.ts     # Shared TypeScript interfaces
-│   ├── config/               # Monorepo configs (Turborepo/Nx)
+│   └── config/               # Monorepo configs (Turborepo/Nx)
+├── deployment/               # Deployment scripts and configurations
+│   ├── nginx/                # Nginx configuration files
+│   ├── ssl/                  # SSL certificates
+│   └── *.sh                  # Deployment and maintenance scripts
+├── docker-compose.yml        # Development Docker configuration
+├── docker-compose.prod.yml   # Production Docker configuration
+├── docker-compose.prod.atlas.yml # Production with MongoDB Atlas
 ├── .env                      # Shared environment variables
+├── env.example               # Environment variables template
 ├── turbo.json / nx.json      # Monorepo configuration
 ├── package.json
-├── README.md
+└── README.md
 ```
 
 ## Database Schema
