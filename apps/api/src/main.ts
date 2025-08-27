@@ -44,7 +44,7 @@ async function bootstrap() {
   ];
 
   const allOrigins = [...new Set([...allowedOrigins, ...defaultOrigins])];
-
+/*
   app.enableCors({
     origin: allOrigins,
     credentials: true,
@@ -52,7 +52,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
   });
-
+*/
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
