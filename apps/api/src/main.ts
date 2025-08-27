@@ -44,7 +44,9 @@ async function bootstrap() {
   ];
 
   const allOrigins = [...new Set([...allowedOrigins, ...defaultOrigins])];
-/*
+ 
+  // CROS will be handled by nginx
+  /*
   app.enableCors({
     origin: allOrigins,
     credentials: true,
