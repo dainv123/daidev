@@ -34,13 +34,13 @@ async function bootstrap() {
     'http://localhost:3002', 
     'http://localhost:3003',
     'http://localhost:3004',
-    'https://daidev.click',
-    'https://www.daidev.click',
-    'https://api.daidev.click',
-    'https://admin.daidev.click',
-    'https://docs.daidev.click',
-    'https://theme.daidev.click',
-    'https://swagger.daidev.click'
+    'http://daidev.click',
+    'http://www.daidev.click',
+    'http://api.daidev.click',
+    'http://admin.daidev.click',
+    'http://docs.daidev.click',
+    'http://theme.daidev.click',
+    'http://swagger.daidev.click'
   ];
 
   const allOrigins = [...new Set([...allowedOrigins, ...defaultOrigins])];
