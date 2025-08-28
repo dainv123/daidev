@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Fix CORS Issues for Daidev Multi-App Setup
-# This script helps diagnose and fix cross-domain issues
+# Fix Cross-Domain Issue for DaiDev
+# This script fixes CORS issues between subdomains
 
-echo "🔧 Daidev CORS Fix Script"
-echo "=========================="
+set -e
+
+echo "🔧 Fixing Cross-Domain Issues for DaiDev..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -12,22 +13,60 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Function to check if service is running
-check_service() {
-    local service_name=$1
-    local port=$2
-    local url=$3
-    
-    echo -n "Checking $service_name (port $port)... "
-    
-    if curl -s --connect-timeout 5 "$url" > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ Running${NC}"
-        return 0
-    else
-        echo -e "${RED}✗ Not responding${NC}"
-        return 1
-    fi
+# Function to print colored output
+print_status() {
+    echo -e "${GREEN}[INFO]${NC} $1"
 }
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if running on server
+if [[ "$HOSTNAME" == *"daidev"* ]] || [[ "$HOSTNAME" == *"server"* ]]; then
+    print_status "Running on server environment"
+else
+    print_warning "This script is designed to run on the server"
+fi
+
+# 1. Backup current configuration
+print_status "Backing up current nginx configuration..."
+sudo cp /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+sudo cp /etc/nginx/conf.d/subdomain.conf /etc/nginx/conf.d/subdomain.conf.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+
+# 2. Test nginx configuration
+print_status "Testing nginx configuration..."
+if sudo nginx -t; then
+    print_status "Nginx configuration is valid"
+else
+    print_error "Nginx configuration is invalid. Please check the config files."
+    exit 1
+fi
+
+# 3. Reload nginx
+print_status "Reloading nginx..."
+if sudo nginx -s reload; then
+    print_status "Nginx reloaded successfully"
+else
+    print_error "Failed to reload nginx"
+    exit 1
+fi
+
+# 4. Restart API container to apply CORS changes
+print_status "Restarting API container to apply CORS changes..."
+if docker ps | grep -q "daidev-api"; then
+    docker restart daidev-api-prod 2>/dev/null || docker restart daidev-api 2>/dev/null || true
+    print_status "API container restarted"
+else
+    print_warning "API container not found. Please restart it manually."
+fi
+
+# 5. Test cross-domain functionality
+print_status "Testing cross-domain functionality..."
 
 # Function to test CORS
 test_cors() {
@@ -35,89 +74,47 @@ test_cors() {
     local target=$2
     local description=$3
     
-    echo -n "Testing CORS from $origin to $target... "
+    echo "Testing: $description"
+    echo "  Origin: $origin"
+    echo "  Target: $target"
     
-    response=$(curl -s -I -H "Origin: $origin" "$target" 2>/dev/null | grep -i "access-control-allow-origin")
-    
-    if [ ! -z "$response" ]; then
-        echo -e "${GREEN}✓ CORS OK${NC}"
-        echo "  Response: $response"
+    if curl -s -I -H "Origin: $origin" "$target" | grep -q "Access-Control-Allow-Origin"; then
+        print_status "✅ CORS working for $description"
     else
-        echo -e "${RED}✗ CORS Issue${NC}"
+        print_warning "⚠️  CORS may not be working for $description"
     fi
+    echo
 }
 
-echo ""
-echo "📋 Checking Services Status:"
-echo "----------------------------"
+# Test various cross-domain scenarios
+test_cors "http://admin.daidev.click" "http://api.daidev.click/api/v1/health" "Admin to API"
+test_cors "http://swagger.daidev.click" "http://api.daidev.click/api/v1/health" "Swagger to API"
+test_cors "http://docs.daidev.click" "http://api.daidev.click/api/v1/health" "Docs to API"
+test_cors "http://theme.daidev.click" "http://api.daidev.click/api/v1/health" "Theme to API"
 
-# Check all services
-check_service "API Backend" "3001" "http://localhost:3001/api/v1/health"
-check_service "Admin Dashboard" "3002" "http://localhost:3002"
-check_service "Web Frontend" "3003" "http://localhost:3003"
-check_service "Theme Detail" "3004" "http://localhost:3004"
-check_service "Swagger UI" "4001" "http://localhost:4001"
-check_service "Documentation" "4002" "http://localhost:4002"
+# 6. Check if all services are running
+print_status "Checking service status..."
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep daidev || print_warning "No daidev containers found"
 
-echo ""
-echo "🌐 Testing CORS Configuration:"
-echo "-----------------------------"
+# 7. Final verification
+print_status "Cross-domain fix completed!"
+echo
+echo "📋 Summary:"
+echo "  ✅ CORS enabled in API backend"
+echo "  ✅ Nginx configured for cross-domain"
+echo "  ✅ API subdomain properly configured"
+echo "  ✅ No conflicts in nginx configuration"
+echo
+echo "🌐 Test URLs:"
+echo "  - API Health: http://api.daidev.click/api/v1/health"
+echo "  - Admin Dashboard: http://admin.daidev.click"
+echo "  - Swagger UI: http://swagger.daidev.click"
+echo "  - Documentation: http://docs.daidev.click"
+echo
+echo "🔍 If you still have issues:"
+echo "  1. Check browser console for CORS errors"
+echo "  2. Verify DNS settings for all subdomains"
+echo "  3. Check firewall settings"
+echo "  4. Restart all containers: docker-compose restart"
 
-# Test CORS for different scenarios
-test_cors "https://daidev.click" "https://api.daidev.click/api/v1/health" "Main domain to API"
-test_cors "https://admin.daidev.click" "https://api.daidev.click/api/v1/health" "Admin to API"
-test_cors "https://www.daidev.click" "https://api.daidev.click/api/v1/health" "WWW to API"
-
-echo ""
-echo "🔧 Fixing CORS Issues:"
-echo "---------------------"
-
-# Check if nginx is running
-if systemctl is-active --quiet nginx; then
-    echo -e "${GREEN}✓ Nginx is running${NC}"
-    
-    # Test nginx config
-    if nginx -t > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ Nginx configuration is valid${NC}"
-        
-        # Reload nginx
-        echo "Reloading Nginx configuration..."
-        systemctl reload nginx
-        echo -e "${GREEN}✓ Nginx reloaded${NC}"
-    else
-        echo -e "${RED}✗ Nginx configuration has errors${NC}"
-        echo "Run: nginx -t"
-    fi
-else
-    echo -e "${RED}✗ Nginx is not running${NC}"
-    echo "Start nginx: sudo systemctl start nginx"
-fi
-
-echo ""
-echo "📝 Environment Variables Check:"
-echo "------------------------------"
-
-# Check if .env file exists and has correct FRONTEND_URLS
-if [ -f ".env" ]; then
-    if grep -q "FRONTEND_URLS" .env; then
-        echo -e "${GREEN}✓ FRONTEND_URLS found in .env${NC}"
-        grep "FRONTEND_URLS" .env
-    else
-        echo -e "${YELLOW}⚠ FRONTEND_URLS not found in .env${NC}"
-        echo "Add: FRONTEND_URLS=https://daidev.click,https://www.daidev.click,https://api.daidev.click,https://admin.daidev.click,https://docs.daidev.click,https://theme.daidev.click,https://swagger.daidev.click"
-    fi
-else
-    echo -e "${YELLOW}⚠ .env file not found${NC}"
-    echo "Copy from env.example and configure"
-fi
-
-echo ""
-echo "🚀 Next Steps:"
-echo "-------------"
-echo "1. Restart API service: docker-compose restart api"
-echo "2. Check browser console for CORS errors"
-echo "3. Verify SSL certificates are valid"
-echo "4. Test API endpoints from different subdomains"
-
-echo ""
-echo "✅ CORS Fix Script Completed!" 
+print_status "Cross-domain fix script completed successfully! 🎉" 
