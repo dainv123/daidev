@@ -15,16 +15,36 @@
 
 ## 🏗️ Architecture
 
-```
-daidev/
-├── apps/
-│   ├── web/                  # Next.js (Public Web App)
-│   ├── theme-detail/         # Nuxt.js (Theme Detail Micro Frontend)
-│   ├── admin/                # React + Tailwind CSS (Admin Dashboard)
-│   ├── api/                  # Nest.js (Backend API)
-├── packages/
-│   ├── shared/               # Shared utilities, types, components
-│   ├── config/               # Monorepo configurations
+```mermaid
+flowchart LR
+    deploy[Dockerized Deployment] --> AppServer
+
+    subgraph AppServer[Application Server]
+        web[Web Frontend - Next.js] 
+        theme[Theme Service - Micro FE - Nuxt.js]
+        admin[Admin Portal - React/Vite]
+        api[Backend API - Nest.js]
+        swagger[API Documentation - Swagger]
+        docs[Project Documentation - Docusaurus]
+
+        web --> api
+        web --> theme
+        api <--> admin
+        api --> swagger
+    end
+
+    subgraph ExternalServices[External Services]
+        direction LR
+        db[(MongoDB Atlas - Database)]
+        s3[(Amazon S3 - Storage)]
+        r53[(Amazon Route 53 - DNS)]
+        gmail[(Gmail - Email Service)]
+    end
+
+    api --> db
+    api --> s3
+    api --> gmail
+    AppServer --> r53
 ```
 
 ## 🛠️ Tech Stack
