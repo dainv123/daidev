@@ -6,16 +6,18 @@
 set -e
 
 # Auto-detect if running on server
-if [ -f "/home/daidev/app/docker-compose.prod.atlas.yml" ]; then
+if [ -f "/home/daidev/app/docker-compose.prod.atlas.yml" ] || [ -f "./docker-compose.prod.atlas.yml" ]; then
     # Running on server directly
     SERVER_IP="localhost"
     DOMAIN=${1:-"daidev.click"}
     FORCE_REBUILD=${2:-"false"}
+    echo "🔍 Detected: Running on server directly"
 else
     # Running from remote
     SERVER_IP=${1:-"103.90.234.177"}
     DOMAIN=${2:-"daidev.click"}
     FORCE_REBUILD=${3:-"false"}
+    echo "🔍 Detected: Running from remote"
 fi
 
 # Colors for output
