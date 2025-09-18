@@ -5,7 +5,7 @@
 
 set -e
 
-SERVER_IP=${1:-"your-server-ip"}
+SERVER_IP=${1:-"103.90.234.177"}
 DOMAIN=${2:-"daidev.click"}
 FORCE_REBUILD=${3:-"false"}
 
