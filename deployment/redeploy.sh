@@ -5,9 +5,18 @@
 
 set -e
 
-SERVER_IP=${1:-"103.90.234.177"}
-DOMAIN=${2:-"daidev.click"}
-FORCE_REBUILD=${3:-"false"}
+# Auto-detect if running on server
+if [ -f "/home/daidev/app/docker-compose.prod.atlas.yml" ]; then
+    # Running on server directly
+    SERVER_IP="localhost"
+    DOMAIN=${1:-"daidev.click"}
+    FORCE_REBUILD=${2:-"false"}
+else
+    # Running from remote
+    SERVER_IP=${1:-"103.90.234.177"}
+    DOMAIN=${2:-"daidev.click"}
+    FORCE_REBUILD=${3:-"false"}
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -23,9 +32,43 @@ print_status() {
     echo -e "${color}${message}${NC}"
 }
 
+# Function to run command (local or remote)
+run_cmd() {
+    local cmd="$1"
+    
+    if [ "$SERVER_IP" = "localhost" ] || [ "$SERVER_IP" = "127.0.0.1" ]; then
+        # Running on server directly
+        eval "$cmd"
+    else
+        # Running from remote
+        ssh daidev@$SERVER_IP "$cmd"
+    fi
+}
+
+# Function to run command as root (local or remote)
+run_cmd_root() {
+    local cmd="$1"
+    
+    if [ "$SERVER_IP" = "localhost" ] || [ "$SERVER_IP" = "127.0.0.1" ]; then
+        # Running on server directly
+        sudo $cmd
+    else
+        # Running from remote
+        ssh root@$SERVER_IP "$cmd"
+    fi
+}
+
 # Function to check if server is reachable
 check_server() {
     print_status $BLUE "🔍 Checking server connectivity..."
+    
+    # Check if running on server directly
+    if [ "$SERVER_IP" = "localhost" ] || [ "$SERVER_IP" = "127.0.0.1" ]; then
+        print_status $GREEN "✅ Running on server directly"
+        return 0
+    fi
+    
+    # Check SSH connectivity if running from remote
     if ! ssh -o ConnectTimeout=10 -o BatchMode=yes daidev@$SERVER_IP exit 2>/dev/null; then
         print_status $RED "❌ Cannot connect to server $SERVER_IP"
         print_status $YELLOW "Please check:"
@@ -41,15 +84,31 @@ check_server() {
 backup_current() {
     print_status $BLUE "💾 Creating backup..."
     local backup_dir="/home/daidev/backups/$(date +%Y%m%d_%H%M%S)"
-    ssh daidev@$SERVER_IP "mkdir -p $backup_dir"
-    ssh daidev@$SERVER_IP "cp -r /home/daidev/app $backup_dir/ 2>/dev/null || true"
+    
+    if [ "$SERVER_IP" = "localhost" ] || [ "$SERVER_IP" = "127.0.0.1" ]; then
+        # Running on server directly
+        mkdir -p $backup_dir
+        cp -r /home/daidev/app $backup_dir/ 2>/dev/null || true
+    else
+        # Running from remote
+        run_cmd "mkdir -p $backup_dir"
+        run_cmd "cp -r /home/daidev/app $backup_dir/ 2>/dev/null || true"
+    fi
     print_status $GREEN "✅ Backup created at $backup_dir"
 }
 
 # Function to check disk space
 check_disk_space() {
     print_status $BLUE "💽 Checking disk space..."
-    local disk_usage=$(ssh daidev@$SERVER_IP "df -h /home | tail -1 | awk '{print \$5}' | sed 's/%//'")
+    
+    if [ "$SERVER_IP" = "localhost" ] || [ "$SERVER_IP" = "127.0.0.1" ]; then
+        # Running on server directly
+        local disk_usage=$(df -h /home | tail -1 | awk '{print $5}' | sed 's/%//')
+    else
+        # Running from remote
+        local disk_usage=$(ssh daidev@$SERVER_IP "df -h /home | tail -1 | awk '{print \$5}' | sed 's/%//'")
+    fi
+    
     if [ "$disk_usage" -gt 85 ]; then
         print_status $YELLOW "⚠️  Disk usage is high: ${disk_usage}%"
         print_status $YELLOW "Consider running cleanup: ./deployment/safe-cleanup.sh"
@@ -76,18 +135,26 @@ show_menu() {
 quick_redeploy() {
     print_status $YELLOW "🚀 Quick re-deploy starting..."
     
-    # Copy project files
-    print_status $BLUE "📁 Copying project files..."
-    scp -r . daidev@$SERVER_IP:/home/daidev/app/
+    # Copy project files (only if running from remote)
+    if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
+        print_status $BLUE "📁 Copying project files..."
+        scp -r . daidev@$SERVER_IP:/home/daidev/app/
+    else
+        print_status $BLUE "📁 Files already on server, skipping copy..."
+    fi
     
     # Update nginx config
     print_status $BLUE "🌐 Updating Nginx configuration..."
-    scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
-    ssh root@$SERVER_IP "nginx -t && systemctl reload nginx"
+    if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
+        scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
+    else
+        cp deployment/nginx/nginx-subdomain.conf /etc/nginx/sites-available/daidev
+    fi
+    run_cmd_root "nginx -t && systemctl reload nginx"
     
     # Restart containers
     print_status $BLUE "🔄 Restarting containers..."
-    ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml restart"
+    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml restart"
     
     print_status $GREEN "✅ Quick re-deploy completed!"
 }
@@ -96,19 +163,27 @@ quick_redeploy() {
 full_redeploy() {
     print_status $YELLOW "🚀 Full re-deploy starting..."
     
-    # Copy project files
-    print_status $BLUE "📁 Copying project files..."
-    scp -r . daidev@$SERVER_IP:/home/daidev/app/
+    # Copy project files (only if running from remote)
+    if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
+        print_status $BLUE "📁 Copying project files..."
+        scp -r . daidev@$SERVER_IP:/home/daidev/app/
+    else
+        print_status $BLUE "📁 Files already on server, skipping copy..."
+    fi
     
     # Update nginx config
     print_status $BLUE "🌐 Updating Nginx configuration..."
-    scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
-    ssh root@$SERVER_IP "nginx -t && systemctl reload nginx"
+    if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
+        scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
+    else
+        cp deployment/nginx/nginx-subdomain.conf /etc/nginx/sites-available/daidev
+    fi
+    run_cmd_root "nginx -t && systemctl reload nginx"
     
     # Rebuild and restart containers
     print_status $BLUE "🐳 Rebuilding and restarting containers..."
-    ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml down"
-    ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml up -d --build"
+    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml down"
+    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml up -d --build"
     
     print_status $GREEN "✅ Full re-deploy completed!"
 }
@@ -119,11 +194,15 @@ nginx_only() {
     
     # Update nginx config
     print_status $BLUE "📝 Copying nginx configuration..."
-    scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
+    if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
+        scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
+    else
+        cp deployment/nginx/nginx-subdomain.conf /etc/nginx/sites-available/daidev
+    fi
     
     # Test and reload nginx
     print_status $BLUE "🔄 Testing and reloading nginx..."
-    ssh root@$SERVER_IP "nginx -t && systemctl reload nginx"
+    run_cmd_root "nginx -t && systemctl reload nginx"
     
     print_status $GREEN "✅ Nginx updated successfully!"
 }
@@ -132,7 +211,7 @@ nginx_only() {
 containers_only() {
     print_status $YELLOW "🔄 Restarting containers only..."
     
-    ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml restart"
+    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml restart"
     
     print_status $GREEN "✅ Containers restarted successfully!"
 }
@@ -143,11 +222,11 @@ check_status() {
     
     echo ""
     print_status $YELLOW "🐳 Container Status:"
-    ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml ps"
+    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml ps"
     
     echo ""
     print_status $YELLOW "🌐 Nginx Status:"
-    ssh root@$SERVER_IP "systemctl status nginx --no-pager -l"
+    run_cmd_root "systemctl status nginx --no-pager -l"
     
     echo ""
     print_status $YELLOW "🔗 Service URLs:"
@@ -175,19 +254,19 @@ view_logs() {
     
     case $log_choice in
         1)
-            ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f --tail=50"
+            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f --tail=50"
             ;;
         2)
-            ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f api --tail=50"
+            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f api --tail=50"
             ;;
         3)
-            ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f web --tail=50"
+            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f web --tail=50"
             ;;
         4)
-            ssh daidev@$SERVER_IP "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f admin --tail=50"
+            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f admin --tail=50"
             ;;
         5)
-            ssh root@$SERVER_IP "journalctl -u nginx -f --no-pager"
+            run_cmd_root "journalctl -u nginx -f --no-pager"
             ;;
         *)
             print_status $RED "❌ Invalid choice"
