@@ -46,177 +46,137 @@ flowchart LR
     api --> gmail
     AppServer --> r53
 ```
+Tôi sẽ scan thư mục root của dự án DaiDev để hiểu cách nó hoạt động. Hãy bắt đầu từ thư mục gốc:
 
-## 🛠️ Tech Stack
+```bash
+cd /Users/dainguyen/Documents/project/daidev && pwd && ls -la
+```
+Bây giờ hãy xem các file cấu hình chính:
 
-### Backend
-- **Nest.js**: API and Backend-for-Frontend layer
-- **MongoDB**: Multi-tenant data storage
-- **Resend**: Email service
-- **Cloudinary**: Image storage and management
+Read file: package.json
+Read file: pnpm-workspace.yaml
+Read file: docker-compose.yml
+Bây giờ hãy xem cấu trúc thư mục apps:
 
-### Frontend
-- **Next.js**: Main portfolio framework
-- **Nuxt.js**: Theme Detail micro frontend
-- **React**: Admin dashboard
-- **Tailwind CSS**: Styling framework
-- **TypeScript**: Type safety
+```bash
+ls -la apps/
+```
+Hãy xem file README để hiểu tổng quan:
 
-### DevOps
-- **Turborepo**: Monorepo management
-- **Vercel**: Frontend hosting
-- **Railway**: Backend hosting
+Read file: README.md
+Bây giờ hãy xem cấu trúc của từng app chính:
 
-## 🚀 Quick Start
+```bash
+find apps/ -name "package.json" -exec echo "=== {} ===" \; -exec head -20 {} \;
+```
+Bây giờ hãy xem cấu trúc API để hiểu backend:
 
-### Prerequisites
-- Node.js 18+
-- MongoDB Atlas account
-- Cloudinary account
-- Resend account
-- reCAPTCHA keys
+```bash
+tree apps/api/src -I node_modules
+```
+Hãy xem file main.ts của API để hiểu cách khởi động:
 
-### Installation
+Read file: apps/api/src/main.ts
+Bây giờ hãy xem cấu trúc web app:
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd daidev
-   ```
+```bash
+tree apps/web/src -I node_modules -L 3
+```
+Cuối cùng, hãy xem cấu trúc admin dashboard:
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+tree apps/admin/src -I node_modules -L 3
+```
+## 🏗️ **Tổng quan về Kiến trúc Dự án DaiDev**
 
-3. **Set up environment variables**
-   ```bash
-   # Copy and configure environment files
-   cp apps/api/.env.example apps/api/.env
-   cp apps/web/.env.local.example apps/web/.env.local
-   cp apps/admin/.env.local.example apps/admin/.env.local
-   cp apps/theme-detail/.env.example apps/theme-detail/.env
-   ```
+Sau khi scan toàn bộ thư mục root, đây là cách dự án DaiDev hoạt động:
 
-4. **Start development servers**
-   ```bash
-   npm run dev
-   ```
-
-### Environment Variables
-
-#### Backend (Nest.js)
-```env
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.mongodb.net/daidev
-RESEND_API_KEY=<resend-api-key>
-CLOUDINARY_CLOUD_NAME=<cloudinary-cloud-name>
-CLOUDINARY_API_KEY=<cloudinary-api-key>
-CLOUDINARY_API_SECRET=<cloudinary-api-secret>
-JWT_SECRET=<jwt-secret>
+### 📁 **Cấu trúc Monorepo**
+```
+daidev/
+├── apps/                    # Các ứng dụng chính
+│   ├── api/                # Backend API (NestJS)
+│   ├── web/                # Frontend chính (Next.js)
+│   ├── admin/              # Admin dashboard (React + Vite)
+│   ├── theme-detail/       # Micro frontend (Nuxt.js)
+│   ├── docs/               # Tài liệu (Docusaurus)
+│   ├── swagger-proxy/      # Swagger UI proxy
+│   └── assets/             # Tài sản tĩnh
+├── packages/               # Shared packages
+├── deployment/             # Scripts triển khai
+└── docker-compose.yml      # Cấu hình Docker
 ```
 
-#### Frontend Web (Next.js)
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=<recaptcha-site-key>
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=<cloudinary-cloud-name>
+### �� **Cách hoạt động**
+
+#### **1. Development Mode**
+```bash
+npm run dev  # Chạy tất cả services
 ```
 
-#### Admin Dashboard (React)
-```env
-REACT_APP_API_URL=http://localhost:3000/api
-REACT_APP_CLOUDINARY_CLOUD_NAME=<cloudinary-cloud-name>
+#### **2. Production Mode**
+```bash
+docker-compose up -d  # Chạy với Docker
 ```
 
-## 📱 Available Apps
+### ��️ **Kiến trúc Microservices**
 
-- **Web App**: http://localhost:3001 (Next.js)
-- **Theme Detail**: http://localhost:3002 (Nuxt.js)
-- **Admin Dashboard**: http://localhost:3003 (React)
-- **Backend API**: http://localhost:3000 (Nest.js)
+#### **Backend (NestJS) - Port 3001**
+- **API RESTful** với Swagger documentation
+- **Multi-tenancy** support
+- **JWT Authentication**
+- **MongoDB** integration
+- **CORS** cho tất cả subdomains
+- **Modules**: Auth, Users, Themes, Blogs, Certificates, Tags, Images, etc.
 
-## 🔧 Development
+#### **Frontend Web (Next.js) - Port 3003**
+- **Portfolio website** chính
+- **i18n** support (EN/VI)
+- **Responsive design**
+- **Dark/Light mode**
+- **Pages**: Home, About, Portfolio, Blog, Contact, Resume
 
-### Available Scripts
+#### **Admin Dashboard (React) - Port 3002**
+- **CRUD operations** cho tất cả entities
+- **Role-based access**
+- **Form management**
+- **Real-time updates**
 
-- `npm run dev` - Start all development servers
-- `npm run build` - Build all applications
-- `npm run lint` - Lint all applications
-- `npm run test` - Run tests
-- `npm run clean` - Clean build outputs
+#### **Theme Detail (Nuxt.js) - Port 3004**
+- **Micro frontend** cho theme preview
+- **SSR** support
+- **Dynamic routing**
 
-### Adding New Features
+#### **Documentation (Docusaurus) - Port 4002**
+- **Project documentation**
+- **API guides**
+- **Deployment guides**
 
-1. **Backend**: Add new modules in `apps/api/src/`
-2. **Frontend**: Add new pages/components in respective apps
-3. **Shared**: Add common utilities in `packages/shared/`
+#### **Swagger UI (Express) - Port 4001**
+- **API documentation**
+- **Interactive testing**
 
-## 🚀 Deployment
+### 🐳 **Docker Architecture**
+- **MongoDB**: Database container
+- **Nginx**: Reverse proxy + load balancer
+- **Multi-container** setup với networking
+- **Volume persistence** cho data
+- **Environment variables** configuration
 
-### Frontend (Vercel)
-- Deploy Next.js, Nuxt.js, and React apps to Vercel
-- Configure environment variables in Vercel dashboard
+### 🔄 **Data Flow**
+1. **User** truy cập website
+2. **Nginx** route requests đến appropriate service
+3. **Frontend** gọi API qua HTTP
+4. **API** xử lý business logic
+5. **MongoDB** lưu trữ data
+6. **External services** (Cloudinary, Resend) cho media & email
 
-### Backend (Railway)
-- Deploy Nest.js app to Railway
-- Connect MongoDB Atlas cluster
-- Configure environment variables
+### 🛠️ **Tech Stack Summary**
+- **Monorepo**: Turborepo + pnpm
+- **Backend**: NestJS + MongoDB + JWT
+- **Frontend**: Next.js + React + Nuxt.js
+- **Styling**: Tailwind CSS
+- **Deployment**: Docker + Nginx
+- **External**: Cloudinary + Resend + reCAPTCHA
 
-## 🔒 Security Features
-
-- **Multi-tenancy**: Data isolation with tenantId
-- **Authentication**: JWT-based auth with Auth.js
-- **Role-based Access**: Admin and viewer roles
-- **reCAPTCHA**: Spam protection for contact forms
-- **Input Validation**: Comprehensive validation with DTOs
-
-## 🌐 Internationalization
-
-The platform supports English and Vietnamese languages:
-- Frontend: `next-i18next` for Next.js, `i18next` for React
-- Backend: Nested language fields in MongoDB documents
-- Database: Multi-language content storage
-
-## 📊 Database Schema
-
-Collections with multi-tenant support:
-- **Users**: User profiles and authentication
-- **Themes**: Portfolio themes with tags
-- **Blogs**: Blog posts with content
-- **Certificates**: User certificates
-- **Tags**: Categorization system
-- **Images**: Cloudinary metadata
-- **ContactMessages**: Form submissions
-- **SiteSettings**: Customizable site configuration
-
-## 🔮 Future Roadmap
-
-- **Bookmark/Like**: User interaction features
-- **Search**: Full-text search capabilities
-- **Theme Marketplace**: Sales and payment integration
-- **Additional Languages**: Expand i18n support
-- **Analytics**: User behavior tracking
-- **Performance**: Advanced caching and optimization
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the repository
-- Check the documentation in the `docs/` folder
-- Review the API documentation
-
----
-
-Built with ❤️ using modern web technologies 
+Đây là một **full-stack portfolio platform** với kiến trúc microservices hiện đại, hỗ trợ multi-tenancy và có thể scale dễ dàng! 🚀
