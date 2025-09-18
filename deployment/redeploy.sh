@@ -53,7 +53,7 @@ run_cmd_root() {
     
     if [ "$SERVER_IP" = "localhost" ] || [ "$SERVER_IP" = "127.0.0.1" ]; then
         # Running on server directly
-        sudo $cmd
+        sudo bash -c "$cmd"
     else
         # Running from remote
         ssh root@$SERVER_IP "$cmd"
