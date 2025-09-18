@@ -101,11 +101,11 @@ backup_current() {
     if [ "$SERVER_IP" = "localhost" ] || [ "$SERVER_IP" = "127.0.0.1" ]; then
         # Running on server directly
         mkdir -p $backup_dir
-        cp -r /home/daidev/app $backup_dir/ 2>/dev/null || true
+        cp -r /home/daidev $backup_dir/ 2>/dev/null || true
     else
         # Running from remote
         run_cmd "mkdir -p $backup_dir"
-        run_cmd "cp -r /home/daidev/app $backup_dir/ 2>/dev/null || true"
+        run_cmd "cp -r /home/daidev $backup_dir/ 2>/dev/null || true"
     fi
     print_status $GREEN "✅ Backup created at $backup_dir"
 }
@@ -168,7 +168,7 @@ quick_redeploy() {
     
     # Restart containers
     print_status $BLUE "🔄 Restarting containers..."
-    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml restart"
+    run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml restart"
     
     print_status $GREEN "✅ Quick re-deploy completed!"
 }
@@ -197,8 +197,8 @@ full_redeploy() {
     
     # Rebuild and restart containers
     print_status $BLUE "🐳 Rebuilding and restarting containers..."
-    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml down"
-    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml up -d --build"
+    run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml down"
+    run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml up -d --build"
     
     print_status $GREEN "✅ Full re-deploy completed!"
 }
@@ -227,7 +227,7 @@ nginx_only() {
 containers_only() {
     print_status $YELLOW "🔄 Restarting containers only..."
     
-    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml restart"
+    run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml restart"
     
     print_status $GREEN "✅ Containers restarted successfully!"
 }
@@ -238,7 +238,7 @@ check_status() {
     
     echo ""
     print_status $YELLOW "🐳 Container Status:"
-    run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml ps"
+    run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml ps"
     
     echo ""
     print_status $YELLOW "🌐 Nginx Status:"
@@ -270,16 +270,16 @@ view_logs() {
     
     case $log_choice in
         1)
-            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f --tail=50"
+            run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml logs -f --tail=50"
             ;;
         2)
-            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f api --tail=50"
+            run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml logs -f api --tail=50"
             ;;
         3)
-            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f web --tail=50"
+            run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml logs -f web --tail=50"
             ;;
         4)
-            run_cmd "cd /home/daidev/app && docker-compose -f docker-compose.prod.atlas.yml logs -f admin --tail=50"
+            run_cmd "cd /home/daidev && docker-compose -f docker-compose.prod.atlas.yml logs -f admin --tail=50"
             ;;
         5)
             run_cmd_root "journalctl -u nginx -f --no-pager"
