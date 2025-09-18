@@ -6,7 +6,7 @@
 set -e
 
 # Auto-detect if running on server
-if [ -f "/home/daidev/app/docker-compose.prod.atlas.yml" ] || [ -f "./docker-compose.prod.atlas.yml" ]; then
+if [ -f "/home/daidev/app/docker-compose.prod.atlas.yml" ] || [ -f "./docker-compose.prod.atlas.yml" ] || [ -f "../docker-compose.prod.atlas.yml" ]; then
     # Running on server directly
     SERVER_IP="localhost"
     DOMAIN=${1:-"daidev.click"}
@@ -57,6 +57,17 @@ run_cmd_root() {
     else
         # Running from remote
         ssh root@$SERVER_IP "$cmd"
+    fi
+}
+
+# Function to get nginx config path
+get_nginx_config_path() {
+    if [ -f "./nginx/nginx-subdomain.conf" ]; then
+        echo "./nginx/nginx-subdomain.conf"
+    elif [ -f "../deployment/nginx/nginx-subdomain.conf" ]; then
+        echo "../deployment/nginx/nginx-subdomain.conf"
+    else
+        echo "deployment/nginx/nginx-subdomain.conf"
     fi
 }
 
@@ -147,10 +158,11 @@ quick_redeploy() {
     
     # Update nginx config
     print_status $BLUE "🌐 Updating Nginx configuration..."
+    local nginx_config=$(get_nginx_config_path)
     if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
-        scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
+        scp $nginx_config root@$SERVER_IP:/etc/nginx/sites-available/daidev
     else
-        cp deployment/nginx/nginx-subdomain.conf /etc/nginx/sites-available/daidev
+        cp $nginx_config /etc/nginx/sites-available/daidev
     fi
     run_cmd_root "nginx -t && systemctl reload nginx"
     
@@ -175,10 +187,11 @@ full_redeploy() {
     
     # Update nginx config
     print_status $BLUE "🌐 Updating Nginx configuration..."
+    local nginx_config=$(get_nginx_config_path)
     if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
-        scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
+        scp $nginx_config root@$SERVER_IP:/etc/nginx/sites-available/daidev
     else
-        cp deployment/nginx/nginx-subdomain.conf /etc/nginx/sites-available/daidev
+        cp $nginx_config /etc/nginx/sites-available/daidev
     fi
     run_cmd_root "nginx -t && systemctl reload nginx"
     
@@ -196,10 +209,11 @@ nginx_only() {
     
     # Update nginx config
     print_status $BLUE "📝 Copying nginx configuration..."
+    local nginx_config=$(get_nginx_config_path)
     if [ "$SERVER_IP" != "localhost" ] && [ "$SERVER_IP" != "127.0.0.1" ]; then
-        scp deployment/nginx/nginx-subdomain.conf root@$SERVER_IP:/etc/nginx/sites-available/daidev
+        scp $nginx_config root@$SERVER_IP:/etc/nginx/sites-available/daidev
     else
-        cp deployment/nginx/nginx-subdomain.conf /etc/nginx/sites-available/daidev
+        cp $nginx_config /etc/nginx/sites-available/daidev
     fi
     
     # Test and reload nginx
