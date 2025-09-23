@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { TagsService } from './tags.service';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('Tags')
 @Controller('tags')
@@ -44,6 +45,7 @@ export class TagsController {
   @ApiOperation({ summary: 'Create new tag (Admin only)' })
   @ApiResponse({ status: 201, description: 'Tag created successfully' })
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async create(@Body() createTagDto: any, @Request() req: any) {
     if (req.user?.role !== 'admin') {
       return { success: false, data: null, message: 'Admin access required' };
@@ -57,6 +59,7 @@ export class TagsController {
   @ApiOperation({ summary: 'Update tag (Admin only)' })
   @ApiResponse({ status: 200, description: 'Tag updated successfully' })
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() updateTagDto: any, @Request() req: any) {
     if (req.user?.role !== 'admin') {
       return { success: false, data: null, message: 'Admin access required' };
@@ -70,6 +73,7 @@ export class TagsController {
   @ApiOperation({ summary: 'Delete tag (Admin only)' })
   @ApiResponse({ status: 204, description: 'Tag deleted successfully' })
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string, @Request() req: any) {
     if (req.user?.role !== 'admin') {
       return { success: false, data: null, message: 'Admin access required' };
