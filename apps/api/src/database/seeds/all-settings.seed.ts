@@ -375,5 +375,17 @@ export const allSettingsSeed: Partial<SiteSettings>[] = [
     key: 'seo_author',
     value: 'Dai Nguyen',
     tenantId: 'default'
+  },
+
+  // Image Assets Settings
+  {
+    key: 'resume_icon_image',
+    value: '/assets/images/resume/1.png',
+    tenantId: 'default'
+  },
+  {
+    key: 'contact_mailbox_image',
+    value: '/assets/images/mailbox.png',
+    tenantId: 'default'
   }
 ]; 

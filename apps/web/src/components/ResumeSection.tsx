@@ -4,10 +4,12 @@ import React from "react";
 import { useLanguage } from "../hooks/useLanguage";
 import { useAboutData } from "../hooks/useAboutData";
 import { useSignedImageUrl } from "../hooks/useSignedImageUrl";
+import { useSiteSettings } from "./SiteSettingsContext";
 
 const ResumeSection: React.FC = () => {
   const { t } = useLanguage();
   const { aboutData, loading, error } = useAboutData();
+  const { settings } = useSiteSettings();
 
   if (loading) {
     return (
@@ -238,7 +240,7 @@ const ResumeSection: React.FC = () => {
                       key={item._id || index}
                       className={`timeline ${index === 0 ? "currecnt" : ""}`}>
                       <div className="timeline-icon">
-                        <img src="/assets/images/resume/1.png" alt="" />
+                        <img src={settings.resume_icon_image || "/assets/images/resume/1.png"} alt="" />
                       </div>
                       <div className="timeline-content">
                         <span className="date">

@@ -335,25 +335,25 @@
     }
 
     // Initialize Google Map when API is loaded
-    if (window.google && window.google.maps) {
-        initGoogleMap();
-    } else {
-        // Wait for Google Maps API to load
-        window.addEventListener('load', function() {
-            if (window.google && window.google.maps) {
-                initGoogleMap();
-            } else {
-                // Try again after a delay
-                setTimeout(function() {
-                    if (window.google && window.google.maps) {
-                        initGoogleMap();
-                    } else {
-                        console.error('Google Maps JavaScript API failed to load.');
-                    }
-                }, 2000);
-            }
-        });
-    }
+    // if (window.google && window.google.maps) {
+    //     initGoogleMap();
+    // } else {
+    //     // Wait for Google Maps API to load
+    //     window.addEventListener('load', function() {
+    //         if (window.google && window.google.maps) {
+    //             initGoogleMap();
+    //         } else {
+    //             // Try again after a delay
+    //             setTimeout(function() {
+    //                 if (window.google && window.google.maps) {
+    //                     initGoogleMap();
+    //                 } else {
+    //                     console.error('Google Maps JavaScript API failed to load.');
+    //                 }
+    //             }, 2000);
+    //         }
+    //     });
+    // }
 
     /*======================================
      WOW Animation

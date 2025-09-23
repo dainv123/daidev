@@ -5,7 +5,7 @@ import React, {
   useState,
   ReactNode,
 } from "react";
-import { getSiteSettings } from "../lib/api";
+import { publicAPI } from "../lib/api";
 
 interface SiteSettingsContextProps {
   settings: Record<string, any>;
@@ -27,45 +27,18 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch all settings (hoặc chỉ các key cần thiết)
-      const allKeys = [
-        // Header
-        "header_name",
-        "header_title",
-        "header_subtitle",
-        "header_avatar",
-        "header_typed_strings",
-        "header_menu_items",
-        "header_copyright",
-        // About
-        "about_title",
-        "about_subtitle",
-        "about_description",
-        "about_skills",
-        "about_experience",
-        "about_education",
-        "about_name",
-        "about_location",
-        "about_years_exp",
-        "about_projects",
-        "about_clients",
-        "about_fun_facts",
-        "about_languages",
-        "about_photo",
-        "about_services",
-        "about_video_section",
-        // Contact
-        "social_email",
-        "social_phone",
-        "social_address",
-        "social_github",
-        "social_linkedin",
-        "social_twitter",
-        // Thêm các key khác nếu cần
-      ];
-      const data = await getSiteSettings(allKeys);
-      setSettings(data);
+      // Fetch all settings
+      const allSettings = await publicAPI.getSiteSettings();
+
+      // Convert array to object for easier access
+      const settingsObject: Record<string, any> = {};
+      allSettings.forEach((setting) => {
+        settingsObject[setting.key] = setting.value;
+      });
+
+      setSettings(settingsObject);
     } catch (err: any) {
+      console.error("Error fetching site settings:", err);
       setError("Không thể tải site settings");
     } finally {
       setLoading(false);
