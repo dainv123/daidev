@@ -176,7 +176,12 @@ const ContactSection: React.FC = () => {
         {/* Contact Form */}
         <div className="row contact-form pb-30">
           <div className="col-sm-12 col-md-5 col-lg-5 left-background">
-            <img src={settings.contact_mailbox_image || "/assets/images/mailbox.png"} alt="Contact" />
+            <img
+              src={
+                settings.contact_mailbox_image || "/assets/images/mailbox.png"
+              }
+              alt="Contact"
+            />
           </div>
           <div className="col-sm-12 col-md-7 col-lg-7">
             <div className="form-contact-me">
