@@ -17,11 +17,15 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = 3001;
 
-  app.use(
-    helmet({
-      contentSecurityPolicy: false,
-    })
-  );
+  // Temporarily disable helmet to test CORS
+  // app.use(
+  //   helmet({
+  //     contentSecurityPolicy: false,
+  //     crossOriginEmbedderPolicy: false,
+  //     crossOriginOpenerPolicy: false,
+  //     crossOriginResourcePolicy: false,
+  //   })
+  // );
 
   const allowedOrigins = (configService.get('FRONTEND_URLS') || '')
     .split(',')
@@ -45,13 +49,26 @@ async function bootstrap() {
 
   const allOrigins = [...new Set([...allowedOrigins, ...defaultOrigins])];
  
-  // Enable CORS for cross-subdomain requests
-  app.enableCors({
-    origin: allOrigins,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  // Custom CORS middleware to avoid duplicate headers
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    
+    // Check if origin is allowed
+    if (allOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+    
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    res.header('Access-Control-Expose-Headers', 'Content-Range, X-Content-Range');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(204);
+    } else {
+      next();
+    }
   });
   app.useGlobalPipes(
     new ValidationPipe({
