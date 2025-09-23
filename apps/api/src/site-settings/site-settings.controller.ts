@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SiteSettingsService } from './site-settings.service';
 
 @ApiTags('Site Settings')
@@ -44,6 +45,7 @@ export class SiteSettingsController {
   @ApiOperation({ summary: 'Create new site setting (Admin only)' })
   @ApiResponse({ status: 201, description: 'Site setting created successfully' })
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async create(@Body() createSiteSettingsDto: any, @Request() req: any) {
     if (req.user?.role !== 'admin') {
       return { success: false, data: null, message: 'Admin access required' };
@@ -57,6 +59,7 @@ export class SiteSettingsController {
   @ApiOperation({ summary: 'Update site setting (Admin only)' })
   @ApiResponse({ status: 200, description: 'Site setting updated successfully' })
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() updateSiteSettingsDto: any, @Request() req: any) {
     if (req.user?.role !== 'admin') {
       return { success: false, data: null, message: 'Admin access required' };
@@ -70,6 +73,7 @@ export class SiteSettingsController {
   @ApiOperation({ summary: 'Delete site setting (Admin only)' })
   @ApiResponse({ status: 204, description: 'Site setting deleted successfully' })
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string, @Request() req: any) {
     if (req.user?.role !== 'admin') {
       return { success: false, data: null, message: 'Admin access required' };
