@@ -80,11 +80,11 @@ import { EducationModule } from './education/education.module';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    {
-      provide: 'CORS_ORIGIN',
-      useFactory: (configService: ConfigService) => configService.get('CORS_ORIGIN') || '*',
-      inject: [ConfigService],
-    },
+    // {
+    //   provide: 'CORS_ORIGIN',
+    //   useFactory: (configService: ConfigService) => configService.get('CORS_ORIGIN') || '*',
+    //   inject: [ConfigService],
+    // },
     {
       provide: Logger,
       useFactory: (configService: ConfigService) => {
