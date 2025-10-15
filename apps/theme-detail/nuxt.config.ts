@@ -22,9 +22,20 @@ export default defineNuxtConfig({
     server: {
       port: 3004,
       strictPort: true
+    },
+    optimizeDeps: {
+      include: ['vue']
     }
   },
   
   // Add compatibility date
-  compatibilityDate: '2025-08-13'
+  compatibilityDate: '2025-01-13',
+  
+  // Runtime config
+  runtimeConfig: {
+    public: {
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'https://api.daidev.click/api/v1',
+      appName: process.env.NUXT_APP_NAME || 'Daidev Portfolio'
+    }
+  }
 })
