@@ -1,3 +1,5 @@
+import federation from '@originjs/vite-plugin-federation'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // Minimal configuration for theme display
@@ -22,9 +24,27 @@ export default defineNuxtConfig({
     server: {
       port: 3004,
       strictPort: true
-    }
+    },
+    build: {
+      target: 'esnext'
+    },
+    plugins: [
+      federation({
+        name: 'themeDetail',
+        filename: 'remoteEntry.js',
+        exposes: {
+          './ThemeViewer': './components/ThemeViewer.vue',
+        },
+        shared: {
+          vue: {
+            singleton: true,
+            requiredVersion: '^3.0.0',
+          },
+        },
+      })
+    ]
   },
   
   // Add compatibility date
-  compatibilityDate: '2025-08-13'
+  compatibilityDate: '2025-08-13',
 })

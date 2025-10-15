@@ -515,3 +515,6 @@ $RECYCLE.BIN/
 
 # Google Maps API Key
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY 
+
+#Ignore cursor AI rules
+.cursor/rules/codacy.mdc

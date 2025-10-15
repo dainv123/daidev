@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { ThemeActionHandler } from "../utils/themeActions";
 import { Theme, ThemeAction } from "../types/theme";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useTags } from "./TagContext";
+
+// Fallback to iframe for now
+// const ThemeViewer = React.lazy(() => import("themeDetail/ThemeViewer"));
 
 interface ThemeDetailProps {
   slug?: string;
@@ -29,7 +32,7 @@ const ThemeDetail: React.FC<ThemeDetailProps> = ({ slug }) => {
   const fetchThemeData = async (themeId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/v1/themes/${themeId}`
+        `http://api.daidev.click/api/v1/themes/${themeId}`
       );
       const data = await response.json();
       setCurrentThemeData(data.data);
@@ -251,7 +254,7 @@ const ThemeDetail: React.FC<ThemeDetailProps> = ({ slug }) => {
             className="theme-detail-frame"
             style={{ maxWidth: "100%", margin: "0 auto 32px auto" }}>
             <iframe
-              src={`http://localhost:3004/theme/${currentThemeData.name}`}
+              src={`http://localhost:3000/theme/${currentThemeData.name}`}
               className="theme-detail-frame-iframe"
               title={`${currentThemeData.name} Theme Preview`}
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"

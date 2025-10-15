@@ -31,6 +31,9 @@
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0",
     "eslint": "^8.51.0",
-    "eslint-config-next": "14.0.0"
+    "eslint-config-next": "14.0.0",
+    "@module-federation/nextjs-mf": "^8.0.0",
+    "@module-federation/utilities": "^2.0.0",
+    "@module-federation/node": "^2.0.0"
   }
 }
