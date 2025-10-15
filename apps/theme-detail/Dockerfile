@@ -16,7 +16,7 @@ COPY nuxt.config.ts ./
 COPY tsconfig*.json ./
 
 # Install dependencies (including devDependencies for build)
-RUN npm ci --no-audit --no-fund
+RUN npm install --no-audit --no-fund
 
 # Copy source code
 COPY . .
